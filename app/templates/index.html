@@ -1,0 +1,100 @@
+<html>
+  <head>
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://peterdonhauser.com/css/academic.css"> -->
+  </head>
+  <body>
+
+
+  <!-- <div id="audiofile-ids" style="display: none;">{{audiofile_ids}}</div> -->
+
+  <div class="container" style="margin-bottom:25px">
+    <div class="d-flex justify-content-center">
+      <div id="button-container" class="btn-group" style="margin-bottom:25px">
+        <!-- <button id="start" class="btn btn-primary" onclick="startRating()">Start</button>
+        <button id="submit" class="btn btn-primary" onclick="endRating()" disabled>Submit</button> -->
+      </div>
+    </div>
+  </div>
+  <div class="container" style="margin-bottom:25px">
+    <div class="d-flex justify-content-center">
+      <div id="plot-speakers-div">
+        <svg id="plot-speakers" width="400" height="600">
+      </div>
+  </div>
+
+  <!-- <div id="audiofile-ids" style="display: none;"></div> -->
+  <div id="audio-container"></div>
+
+  <script src="//d3js.org/d3.v4.min.js"></script>
+  <script type="text/javascript" src="/static/rating_graphical.js?v=2"></script>
+  <script src="//code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+      document.onload = startRating()
+      function drawGraph(audiofile_ids) {
+        const url = new URL(location.href)
+        var num_speakers = parseInt(url.searchParams.get('num_speakers'))
+        data = {'nodes': []}
+        for (i=0; i<num_speakers; i++) {
+          data.nodes.push({'id': String(audiofile_ids[i]), 'x': [], 'y': []})
+        }
+        var type = url.searchParams.get('type')
+        if (type=='clinical') {
+          feature_labels = ['Voice', 'Articulation', 'Prosody']
+          feature_anchors = [['normal','','harsh/breathy'],
+                             ['normal','','slurred/imprecise'],
+                             ['normal','','flat/monotonous']]
+          var graph = new FeatureRatings(data, 'plot-speakers', 'audio-container',
+                                         buttonContainerId='button-container',
+                                         draw_edges=true,
+                                         num_features=3,
+                                         feature_labels=feature_labels,
+                                         feature_anchors=feature_anchors,
+                                         item_spacing=7.5)
+        } else if (type=='accent') {
+          var graph = new FeatureRatings(data, 'plot-speakers', 'audio-container',
+                                         buttonContainerId='button-container',
+                                         draw_edges=true,
+                                         num_features=1,
+                                         feature_labels=['Accent'],
+                                         feature_anchors=[['native-like', '', 'strong foreign accent']],
+                                         item_spacing=7.5)
+        } else if (type=='square') {
+          feature_labels = ['Voice', 'Articulation']
+          feature_anchors = [['normal','','impaired'],
+                             ['normal','','impaired']]
+          var graph = new FeatureRatings2D(data, 'plot-speakers', 'audio-container',
+                                           buttonContainerId='button-container',
+                                           draw_edges=true,
+                                           feature_labels=feature_labels,
+                                           feature_anchors=feature_anchors)
+        } else if (type=='freesort') {
+          var graph = new FreesortGraph(data, 'plot-speakers', 'audio-container',
+                                        buttonContainerId='button-container',
+                                        draw_edges=false, trial_id='', width=400,
+                                        nextURL='', num_col=4, item_spacing=12.5)
+        } else if (type=='similarity') {
+          var graph = new AudioGraph(data, 'plot-speakers', 'audio-container',
+                                       buttonContainerId='button-container')
+        } else if (type=='triplets') {
+          var graph = new TripletAudioGraph(data, 'plot-speakers', 'audio-container',
+                                            buttonContainerId='button-container')
+        }
+        graph.build()
+      }
+      function startRating() {
+        // document.getElementById('start').disabled = true
+        var audiofile_ids = [0,1,2,3,4,5,6,7]
+        drawGraph(audiofile_ids)
+      }
+      function endRating() {
+        // document.getElementById('start').disabled = false
+        // document.getElementById('submit').disabled = true
+        $("#plot-speakers").empty();
+      }
+    </script>
+
+  </body>
+</html>

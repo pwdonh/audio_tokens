@@ -110,9 +110,16 @@ class AudioGraph {
     var player_id, player
     for (i=0; i<this.num_items; i++) {
       player_id = 'page-audio-'+this.nodes[i].id
-      $('#'+this.audioContainerId).append('<audio id="'+player_id+'"></audio>')
-      requestAudio(this.nodes[i].id)
-      player = document.getElementById(player_id)
+      if (!!document.getElementById(player_id)) {
+        console.log('audiofile id already loaded')
+      } else {
+        $('#'+this.audioContainerId).append('<audio id="'+player_id+'"></audio>')
+        if (this.nodes[i].audiofile.length>0) {
+          showPlaybackTools(this.nodes[i].audiofile, this.nodes[i].id)
+        } else {
+          requestAudio(this.nodes[i].id)
+        }
+      }
       // tracks.push( this.audioCtx.createMediaElementSource(player) )
       // tracks[i].connect(this.audioCtx.destination);
     }
@@ -153,11 +160,11 @@ class AudioGraph {
     var edgeUpdate = this.edgeUpdate
     var edgeHide = this.edgeHide
 
-    var html = '<svg id="plot-speakers" width="'+this.width+'" height="'+this.height+'">'
+    var html = '<svg id="'+this.parentId+'-svg" width="'+this.width+'" height="'+this.height+'">'
     document.getElementById(this.parentId).innerHTML += html
-    this.svg = document.getElementById('plot-speakers')
+    this.svg = document.getElementById(this.parentId+'-svg')
 
-    var svg = d3.select("#plot-speakers")
+    var svg = d3.select('#'+this.parentId+'-svg')
 
     this.drawBorder(svg)
 
@@ -238,7 +245,7 @@ class AudioGraph {
     var style = this.style
     var self = this
 
-    var svg = d3.select("#plot-speakers")
+    var svg = d3.select('#'+self.parentId+'-svg')
     var circles = svg.selectAll('circle')
 
     circles.on("mouseover", function(d, i) {
@@ -570,7 +577,7 @@ class TripletAudioGraph extends SquareAudioGraph {
   drawBorder(svg) {
     var borderPath = svg.append("rect")
                         .attr('id', 'drop-box')
-                      	.attr("x", 30)
+                      	.attr("x", 30+this.r/2)
                       	.attr("y", 30)
                         .attr("rx", 10)
                         .attr("ry", 10)
@@ -852,10 +859,11 @@ class FeatureRatings extends SquareAudioGraph {
     var i, j
     for (i=0; i<data.nodes.length; i++) {
       for (j=0; j<num_features; j++) {
-        nodescopy.push({'id': data.nodes[i].id, 'x': data.nodes[i].x, 'y': []})
+        nodescopy.push({'id': data.nodes[i].id, 'audiofile': data.nodes[i].audiofile, 'x': data.nodes[i].x, 'y': []})
       }
     }
     data.nodes = nodescopy
+    console.log(data)
     super(data, parentId, audioContainerId, buttonContainerId, draw_edges, trial_id, width, nextURL)
     this.r = this.width/2-60
     this.feature_height = num_audio*item_spacing
@@ -1162,7 +1170,7 @@ class AudioGraphStatic3d extends AudioGraphStatic {
   }
 
   setupDrag() {
-    var svg = d3.select("#plot-speakers")
+    var svg = d3.select('#'+this.parentId+'-svg')
     var self = this
     svg.call(d3.drag()
       .on("start", function(d) {
@@ -1187,7 +1195,7 @@ class AudioGraphStatic3d extends AudioGraphStatic {
   zoom(self, k) {
     self.scale = k
     console.log(self.scale)
-    var svg = d3.select("#plot-speakers")
+    var svg = d3.select('#'+self.parentId+'-svg')
     self.update_nodes(self, svg)
   }
 
@@ -1205,7 +1213,7 @@ class AudioGraphStatic3d extends AudioGraphStatic {
     alpha  = (d3.event.y - self.my + self.mouseY) * Math.PI / 230  * (-1);
     self.yangle = alpha - self.startAngle
     self.xangle = beta + self.startAngle
-    var svg = d3.select("#plot-speakers")
+    var svg = d3.select('#'+self.parentId+'-svg')
     self.update_nodes(self, svg)
   }
 

@@ -38,7 +38,7 @@
         var num_speakers = parseInt(url.searchParams.get('num_speakers'))
         data = {'nodes': []}
         for (i=0; i<num_speakers; i++) {
-          data.nodes.push({'id': String(audiofile_ids[i]), 'x': [], 'y': []})
+          data.nodes.push({'id': String(audiofile_ids[i]), 'audiofile': [], 'x': [], 'y': []})
         }
         var type = url.searchParams.get('type')
         if (type=='clinical') {

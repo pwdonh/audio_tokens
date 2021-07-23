@@ -1,4 +1,3 @@
-# app_ratings
 
 ```
 python3 -m venv ./venv

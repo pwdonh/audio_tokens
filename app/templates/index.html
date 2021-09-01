@@ -27,7 +27,7 @@
   <div id="audio-container"></div>
 
   <script src="//d3js.org/d3.v4.min.js"></script>
-  <script type="text/javascript" src="/static/rating_graphical.js?v=2"></script>
+  <script type="text/javascript" src="/static/rating_graphical.js?v=3"></script>
   <script src="//code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
@@ -78,6 +78,9 @@
         } else if (type=='similarity') {
           var graph = new AudioGraph(data, 'plot-speakers', 'audio-container',
                                        buttonContainerId='button-container')
+        } else if (type=='circlesort') {
+          var graph = new CircleSortGraph(data, 'plot-speakers', 'audio-container',
+                                          buttonContainerId='button-container')
         } else if (type=='triplets') {
           var graph = new TripletAudioGraph(data, 'plot-speakers', 'audio-container',
                                             buttonContainerId='button-container')

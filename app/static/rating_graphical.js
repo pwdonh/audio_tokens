@@ -432,6 +432,120 @@ class AudioGraph {
 
 }
 
+class CircleSortGraph extends AudioGraph {
+
+  constructor(data, parentId, audioContainerId, buttonContainerId='',
+              draw_edges=true, trial_id='', width=400, nextURL='') {
+    super(data, parentId, audioContainerId, buttonContainerId,
+                draw_edges, trial_id, width, nextURL)
+    this.num_in = 0
+    this.num_clusters = 0
+    this.last_cluster = 0
+    this.clusterIndex = Array(self.num_items)
+    console.log(this.nodes)
+  }
+
+  get_num_in(self) {
+    var num = 0
+    for (var j=0; j<self.nodes.length; j++) {
+      if (self.is_in(self, self.nodes[j].x, self.nodes[j].y)) {
+        num += 1
+      }
+    }
+    return num
+  }
+
+  update_clusters(self, i) {
+    var nn = self.getNearestNeighbor(self, i)
+    // if nn is in a cluster already, put i in it
+    if (self.clusterIndex[nn]) {
+      self.clusterIndex[i] = self.clusterIndex[nn]
+    } else { // if not, create new cluster
+      self.clusterIndex[i] = self.last_cluster+1
+      self.last_cluster += 1
+    }
+    // update number of clusters
+    self.num_clusters = self.clusterIndex.filter(onlyUnique).length
+  }
+
+  dragged(self, circle, d, i) {
+     var newpos = self.boundary(self, d3.event.x, d3.event.y, i)
+     d3.select(circle).attr("cx", d.x = newpos[0]).attr("cy", d.y = newpos[1]);
+     self.edgeUpdateDrag(self, d, i, newpos[0], newpos[1])
+  }
+
+  dragended(self, circle, d, i) {
+     d3.select(circle).classed("active", false);
+     var newpos = self.boundary(self, d3.event.x, d3.event.y, i)
+     d3.select(circle).attr("cx", d.x = newpos[0]).attr("cy", d.y = newpos[1])
+     self.nodes[i].x = newpos[0]
+     self.nodes[i].y = newpos[1]
+     self.edgeUpdate(self, d, i, newpos[0], newpos[1])
+     self.edgeHide(self)
+     self.num_in = self.get_num_in(self)
+     self.update_clusters(self, i)
+     console.log(self.clusterIndex)
+     self.min_len = Math.max(40, self.max_len/(1+self.num_in))
+     if (self.all_in(self)) {
+       self.readyFcn()
+     }
+  }
+
+  getStrokeOn() {
+    var stroke = 'rgba(0,0,0,1)'
+    var stroke_width = 1
+    return [stroke, stroke_width]
+  }
+
+  getStrokeOff() {
+    var stroke = 'rgba(0,0,0,0)'
+    var stroke_width = 1
+    return [stroke, stroke_width]
+  }
+
+  getNearestNeighbor(self, i) {
+    var min_len = self.min_len
+    var nn = self.nodes.length+1
+    var len
+    for (var j=0; j<self.nodes.length; j++) {
+      if ((j!=i)&self.is_in(self, self.nodes[j].x, self.nodes[j].y)) {
+        len = computeLength(self.nodes[i].x, self.nodes[j].x, self.nodes[i].y, self.nodes[j].y)
+        if (len<min_len) {
+          min_len = len
+          nn = j
+        }
+      }
+    }
+    return nn
+  }
+
+  edgeUpdateDrag(self, d, i, x, y) {
+    var nn = self.getNearestNeighbor(self, i)
+    var cluster = self.clusterIndex[nn]
+    console.log(cluster)
+    self.edges.each(function(l, li) {
+      if (l.source == i) {
+        d3.select(this).attr("x1", d.x = x).attr("y1", d.y = y);
+      } else if (l.target == i) {
+        d3.select(this).attr("x2", d.x = x).attr("y2", d.y = y);
+      }
+      if (
+        (cluster>0)&(
+        ((self.clusterIndex[l.target]==cluster)&(self.clusterIndex[l.source]==cluster))|
+        ((l.target==i)&(self.clusterIndex[l.source]==cluster))|
+        ((self.clusterIndex[l.target]==cluster)&(l.source==i))
+      )) {
+        var stroke_params = self.getStrokeOn()
+      } else {
+        var stroke_params = self.getStrokeOff()
+      }
+      d3.select(this).attr("stroke", stroke_params[0])
+      d3.select(this).attr("stroke-width", stroke_params[1])
+    });
+  }
+
+}
+
 class SquareAudioGraph extends AudioGraph {
 
   layout() {
@@ -1334,6 +1448,10 @@ function edgeLength(edge) {
   x2 = edge.x2.animVal.value
   y1 = edge.y1.animVal.value
   y2 = edge.y2.animVal.value
+  return computeLength(x1, x2, y1, y2)
+}
+
+function computeLength(x1, x2, y1, y2) {
   return Math.sqrt((x1-x2)**2+(y1-y2)**2)
 }
 
@@ -1382,6 +1500,10 @@ function makeArray(startValue, stopValue, cardinality) {
     arr.push(startValue + (step * i));
   }
   return arr;
+}
+
+function onlyUnique(value, index, self) {
+  return self.indexOf(value) === index;
 }
 
 function closest(x, y, xpos, ypos, max=1e6) {

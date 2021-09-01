@@ -544,6 +544,16 @@ class CircleSortGraph extends AudioGraph {
     });
   }
 
+  submitFcn() {
+    var i, j, pos, category
+    var results = []
+    for (i=0; i<this.nodes.length; i++) {
+      results.push({'id': this.nodes[i].id, 'values': [this.clusterIndex[i]]})
+    }
+    submitResults({'type': 'circlesort', 'trial_id': this.trial_id,
+                   'results': results}, this.nextURL)
+  }
+
 }
 
 class SquareAudioGraph extends AudioGraph {

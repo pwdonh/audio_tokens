@@ -143,7 +143,7 @@ class AudioGraph {
 
   drawBorder(svg) {
     var borderPath = svg.append("circle")
-                        .attr('id', 'drop-box')
+                        .attr('id', this.parentID+'-drop-box')
                         .attr("cx", this.h)
                         .attr("cy", this.k)
                         .attr("r", this.r)
@@ -452,7 +452,7 @@ class SquareAudioGraph extends AudioGraph {
 
   drawBorder(svg) {
     var borderPath = svg.append("rect")
-                        .attr('id', 'drop-box')
+                        .attr('id', this.parentID+'-drop-box')
                       	.attr("x", 30)
                       	.attr("y", 30)
                         .attr("rx", 10)
@@ -502,7 +502,7 @@ class TripletStaticAudioGraph extends SquareAudioGraph {
 
   drawBorder(svg) {
     var borderPath = svg.append("rect")
-                        .attr('id', 'drop-box')
+                        .attr('id', this.parentID+'-drop-box')
                       	.attr("x", 30+this.r/2)
                       	.attr("y", 30)
                         .attr("rx", 10)
@@ -559,7 +559,7 @@ class TripletAudioGraph extends SquareAudioGraph {
                       .style("stroke", "none")
                       .style("fill", "white")
 
-    d3.select('#drop-box').raise()
+    d3.select('#'+this.parentID+'-drop-box').raise()
 
     d3.selectAll(".node")
       .attr('opacity', 0.)
@@ -576,7 +576,7 @@ class TripletAudioGraph extends SquareAudioGraph {
 
   drawBorder(svg) {
     var borderPath = svg.append("rect")
-                        .attr('id', 'drop-box')
+                        .attr('id', this.parentID+'-drop-box')
                       	.attr("x", 30+this.r/2)
                       	.attr("y", 30)
                         .attr("rx", 10)
@@ -690,7 +690,7 @@ class FreesortGraph extends SquareAudioGraph {
     for (i=i_0; i<this.ypos_show.length; i++) {
       for (j=0; j<this.xpos.length; j++) {
         var borderPath = svg.append("rect")
-                            .attr('id', 'drop-box')
+                            .attr('id', this.parentID+'-drop-box')
                           	.attr("x", this.xpos[j]-this.box_width/2)
                           	.attr("y", this.ypos[i]-this.box_height/2)
                             .attr("rx", 10)
@@ -741,7 +741,7 @@ class FeatureRatings2D extends SquareAudioGraph {
     this.r = (this.r+30)*.8-30
     this.h = this.h*.8
     this.k = this.k*.8
-    this.edge_on_hover = false
+    this.edge_on_hover = true
   }
 
   drawBorder(svg) {
@@ -908,7 +908,7 @@ class FeatureRatings extends SquareAudioGraph {
     for (i=0; i<this.num_features; i++) {
       var ypos = this.ypos[i]-this.feature_height
       var borderPath = svg.append("rect")
-                          .attr('id', 'drop-box')
+                          .attr('id', this.parentID+'-drop-box')
                         	.attr("x", 45)
                         	.attr("y", ypos)
                           .attr("rx", 10)
@@ -1099,7 +1099,7 @@ class AudioGraphMultipleStatic extends AudioGraphStatic {
 
   drawBorder(svg) {
     var borderPath = svg.append("rect")
-                        .attr('id', 'drop-box')
+                        .attr('id', this.parentID+'-drop-box')
                       	.attr("x", 15)
                       	.attr("y", 15)
                         .attr("rx", 10)
@@ -1109,7 +1109,7 @@ class AudioGraphMultipleStatic extends AudioGraphStatic {
                         .style("stroke", 'black')
                         .style("fill", "none")
     var borderPath2 = svg.append("rect")
-                        .attr('id', 'drop-box')
+                        .attr('id', this.parentID+'-drop-box')
                       	.attr("x", 30*2+2*this.r)
                       	.attr("y", 15)
                         .attr("rx", 10)

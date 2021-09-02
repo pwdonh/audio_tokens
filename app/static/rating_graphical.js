@@ -1069,7 +1069,7 @@ class FeatureRatings extends SquareAudioGraph {
                         	.attr("width", this.r*2+30)
                           .style("stroke", 'black')
                           .style("fill", "none")
-      this.addText(this.h, ypos-20, this.feature_labels[i])
+      this.addText(this.h, ypos-19, this.feature_labels[i])
       for (j=0; j<3; j++) {
         this.addText(this.h-this.r+this.r*j, ypos+20+this.feature_height*2, this.feature_anchors[i][j], 12)
       }

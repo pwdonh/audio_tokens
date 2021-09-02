@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>My experiment</title>
+        <script src="//cdn.jsdelivr.net/gh/jspsych/jsPsych/jspsych.js"></script>
+        <script src="jspsych_plugins/jspsych-audioratings-features.js"></script>
+        <script src="//d3js.org/d3.v4.min.js"></script>
+        <script type="text/javascript" src="app/static/rating_graphical.js"></script>
+        <link href="//cdn.jsdelivr.net/gh/jspsych/jsPsych/css/jspsych.css" rel="stylesheet" type="text/css">
+    </head>
+    <body></body>
+    <script>
+
+    var single_feature_trial = {
+        type: 'audioratings-features',
+        stimuli: ['data/cven_00_02286_84473_617520.wav',
+                  'data/cven_01_08364_84473_528510.wav',
+                  'data/cven_03_26059_84473_17388318.wav',
+                  'data/cven_04_14644_84473_57886.wav'],
+        label: ['Feature 1'],
+        anchors: [['low', '', 'high']]
+    }
+
+    var multiple_feature_trial = {
+        type: 'audioratings-features',
+        stimuli: ['data/cven_05_14026_84473_17255724.wav',
+                  'data/cven_06_31405_84473_97708.wav',
+                  'data/cven_07_27838_84473_566483.wav',
+                  'data/cven_07_27838_84473_566483.wav'],
+        label: ['Feature 1', 'Feature 2', 'Feature 3'],
+        anchors: [['low', '', 'high'],
+                  ['low', '', 'high'],
+                  ['low', '', 'high']]
+    }
+
+    jsPsych.init({
+        timeline: [single_feature_trial, multiple_feature_trial],
+        on_finish: function() {
+          jsPsych.data.displayData();
+        }
+    })
+
+    </script>
+</html>

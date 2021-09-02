@@ -3,8 +3,7 @@
     <head>
         <title>My experiment</title>
         <script src="//cdn.jsdelivr.net/gh/jspsych/jsPsych/jspsych.js"></script>
-        <script src="jspsych_plugins/jspsych-audioratings-features.js"></script>
-        <script src="jspsych_plugins/jspsych-audioratings-circlesort.js"></script>
+        <script src="jspsych_plugins/jspsych-audio-ratings.js"></script>
         <script src="//d3js.org/d3.v4.min.js"></script>
         <script type="text/javascript" src="app/static/rating_graphical.js"></script>
         <link href="//cdn.jsdelivr.net/gh/jspsych/jsPsych/css/jspsych.css" rel="stylesheet" type="text/css">
@@ -13,7 +12,8 @@
     <script>
 
     var single_feature_trial = {
-        type: 'audioratings-features',
+        type: 'audio-ratings',
+        ratingtype: 'features',
         stimuli: ['data/cven_00_02286_84473_617520.wav',
                   'data/cven_01_08364_84473_528510.wav',
                   'data/cven_03_26059_84473_17388318.wav',
@@ -23,7 +23,8 @@
     }
 
     var multiple_feature_trial = {
-        type: 'audioratings-features',
+        type: 'audio-ratings',
+        ratingtype: 'features',
         stimuli: ['data/cven_05_14026_84473_17255724.wav',
                   'data/cven_06_31405_84473_97708.wav',
                   'data/cven_07_27838_84473_566483.wav',
@@ -35,7 +36,48 @@
     }
 
     var circlesort_trial = {
-        type: 'audioratings-circlesort',
+        type: 'audio-ratings',
+        ratingtype: 'cluster',
+        stimuli: ['data/cven_00_02286_84473_617520.wav',
+                  'data/cven_01_08364_84473_528510.wav',
+                  'data/cven_03_26059_84473_17388318.wav',
+                  'data/cven_04_14644_84473_57886.wav',
+                  'data/cven_05_14026_84473_17255724.wav',
+                  'data/cven_06_31405_84473_97708.wav',
+                  'data/cven_07_27838_84473_566483.wav',
+                  'data/cven_07_27838_84473_566483.wav'],
+    }
+
+    var similarity_trial = {
+        type: 'audio-ratings',
+        ratingtype: 'similarity',
+        stimuli: ['data/cven_00_02286_84473_617520.wav',
+                  'data/cven_01_08364_84473_528510.wav',
+                  'data/cven_03_26059_84473_17388318.wav',
+                  'data/cven_04_14644_84473_57886.wav',
+                  'data/cven_05_14026_84473_17255724.wav',
+                  'data/cven_06_31405_84473_97708.wav',
+                  'data/cven_07_27838_84473_566483.wav',
+                  'data/cven_07_27838_84473_566483.wav'],
+    }
+
+    var categories_trial = {
+        type: 'audio-ratings',
+        ratingtype: 'categories',
+        stimuli: ['data/cven_00_02286_84473_617520.wav',
+                  'data/cven_01_08364_84473_528510.wav',
+                  'data/cven_03_26059_84473_17388318.wav',
+                  'data/cven_04_14644_84473_57886.wav',
+                  'data/cven_05_14026_84473_17255724.wav',
+                  'data/cven_06_31405_84473_97708.wav',
+                  'data/cven_07_27838_84473_566483.wav',
+                  'data/cven_07_27838_84473_566483.wav'],
+        label: ['Category 1', 'Category 2'],
+    }
+
+    var triplets_trial = {
+        type: 'audio-ratings',
+        ratingtype: 'triplets',
         stimuli: ['data/cven_00_02286_84473_617520.wav',
                   'data/cven_01_08364_84473_528510.wav',
                   'data/cven_03_26059_84473_17388318.wav',
@@ -47,9 +89,14 @@
     }
 
     jsPsych.init({
-        timeline: [single_feature_trial,
-                   multiple_feature_trial,
-                   circlesort_trial],
+        timeline: [
+          single_feature_trial,
+          multiple_feature_trial,
+          categories_trial,
+          circlesort_trial,
+          similarity_trial,
+          triplets_trial
+        ],
         on_finish: function() {
           jsPsych.data.displayData();
         }

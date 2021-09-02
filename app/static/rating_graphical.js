@@ -93,6 +93,7 @@ class AudioGraph {
                     'values': [x, y]})
     }
     this.submitResults({'type': 'circle', 'trial_id': this.trial_id,
+                        'ratingtype': 'similarity',
                         'results': results}, this.nextURL)
   }
 
@@ -563,6 +564,7 @@ class CircleSortGraph extends AudioGraph {
                     'values': [this.clusterIndex[i]]})
     }
     this.submitResults({'type': 'circlesort', 'trial_id': this.trial_id,
+                        'ratingtype': 'cluster',
                         'results': results}, this.nextURL)
   }
 
@@ -775,6 +777,7 @@ class TripletAudioGraph extends SquareAudioGraph {
                     'values': [nodes[i].completed]})
     }
     this.submitResults({'type': 'triplet', 'trial_id': this.trial_id,
+                        'ratingtype': 'triplet',
                         'results': results}, this.nextURL)
   }
 
@@ -784,8 +787,7 @@ class FreesortGraph extends SquareAudioGraph {
 
   constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=false,
               trial_id='', width=400, nextURL='', isJsPsych=false,
-              num_col=4, item_spacing=7.5) {
-    console.log(num_col)
+              num_col=4, item_spacing=7.5, feature_labels=['']) {
     super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
           trial_id, width, nextURL, isJsPsych)
     this.r = this.width/2-30
@@ -795,25 +797,26 @@ class FreesortGraph extends SquareAudioGraph {
     this.ypos = makeArray(30+this.box_width/2,this.r*2-this.box_width/2+30,num_col)
     this.ypos_show = [this.ypos[0]]
     this.xpos = makeArray(30+this.box_width/2,this.r*2-this.box_width/2+30,num_col)
+    this.feature_labels = feature_labels
   }
 
-  addRow() {
-    if (this.ypos_show.length<this.ypos.length) {
-      var i_0 = this.ypos_show.length
-      this.ypos_show = this.ypos.slice(0,this.ypos_show.length+1)
-      this.drawBorder(this.svg, i_0)
-    }
-  }
-
-  build() {
-    super.build()
-    this.row_btn = document.createElement("BUTTON");
-    this.row_btn.innerHTML = 'Add row'
-    this.row_btn.className += this.buttonClass
-    this.row_btn.addEventListener("click", this.addRow.bind(this))
-    this.row_btn.disabled = true
-    document.getElementById(this.buttonContainerId).appendChild(this.row_btn)
-  }
+  // addRow() {
+  //   if (this.ypos_show.length<this.ypos.length) {
+  //     var i_0 = this.ypos_show.length
+  //     this.ypos_show = this.ypos.slice(0,this.ypos_show.length+1)
+  //     this.drawBorder(this.svg, i_0)
+  //   }
+  // }
+  //
+  // build() {
+  //   super.build()
+  //   this.row_btn = document.createElement("BUTTON");
+  //   this.row_btn.innerHTML = 'Add row'
+  //   this.row_btn.className += this.buttonClass
+  //   this.row_btn.addEventListener("click", this.addRow.bind(this))
+  //   this.row_btn.disabled = true
+  //   document.getElementById(this.buttonContainerId).appendChild(this.row_btn)
+  // }
 
   startFcn() {
     super.startFcn()
@@ -840,6 +843,7 @@ class FreesortGraph extends SquareAudioGraph {
                           	.attr("width", this.box_width)
                             .style("stroke", "black")
                             .style("fill", "none")
+        this.addText(this.xpos[j], this.ypos[i]+20+this.box_height/2, this.feature_labels[j])
       }
     }
   }
@@ -856,6 +860,7 @@ class FreesortGraph extends SquareAudioGraph {
                     'values': [category]})
     }
     this.submitResults({'type': 'freesort', 'trial_id': this.trial_id,
+                        'ratingtype': 'categories',
                         'results': results}, this.nextURL)
   }
 
@@ -1042,6 +1047,7 @@ class FeatureRatings extends SquareAudioGraph {
       }
     }
     this.submitResults({'type': 'features', 'trial_id': this.trial_id,
+                        'ratingtype': 'features',
                         'results': results}, this.nextURL)
   }
 
@@ -1607,6 +1613,8 @@ function submitResults(results, nextURL='') {
 function submitResultsJsPsych(results, nextURL) {
   // end trial
   // 'nextURL' variable is used to pass 'display_element' from jsPsych...
+  delete results.type
+  delete results.trial_id
   nextURL.innerHTML = '';
   jsPsych.finishTrial(results);
 }

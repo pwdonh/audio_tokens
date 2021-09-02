@@ -82,6 +82,14 @@ jsPsych.plugins["audio-ratings"] = (function() {
                                      feature_anchors=trial.anchors,
                                      item_spacing=7.5, trial_id='', width=400,
                                      nextURL=display_element, isJsPsych=true)
+    } else if (trial.ratingtype=='features2d') {
+      var graph = new FeatureRatings2D(data, 'plot-speakers', 'audio-container',
+                                       buttonContainerId='button-container',
+                                       draw_edges=true,
+                                       feature_labels=trial.label,
+                                       feature_anchors=trial.anchors,
+                                       trial_id='', width=400,
+                                       nextURL=display_element, isJsPsych=true)
     } else if (trial.ratingtype=='categories') {
       var graph = new FreesortGraph(data, 'plot-speakers', 'audio-container',
                                     buttonContainerId='button-container',

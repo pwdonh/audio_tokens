@@ -56,6 +56,18 @@ class AudioGraph {
     return self.circle_size_1(self,d)+2
   }
 
+  getStrokeOn() {
+    var stroke = 'rgba(0,0,0,1)'
+    var stroke_width = 1
+    return [stroke, stroke_width]
+  }
+
+  getStrokeOff() {
+    var stroke = 'rgba(0,0,0,0)'
+    var stroke_width = 1
+    return [stroke, stroke_width]
+  }
+
   unblockAudio() {
     // if (this.audioCtx.state === 'suspended') {
     //     this.audioCtx.resume();
@@ -503,18 +515,6 @@ class CircleSortGraph extends AudioGraph {
      }
   }
 
-  getStrokeOn() {
-    var stroke = 'rgba(0,0,0,1)'
-    var stroke_width = 1
-    return [stroke, stroke_width]
-  }
-
-  getStrokeOff() {
-    var stroke = 'rgba(0,0,0,0)'
-    var stroke_width = 1
-    return [stroke, stroke_width]
-  }
-
   getNearestNeighbor(self, i) {
     var min_len = self.min_len
     var nn = self.nodes.length+1
@@ -889,7 +889,7 @@ class FeatureRatings2D extends SquareAudioGraph {
     this.r = (this.r+30)*.8-30
     this.h = this.h*.8
     this.k = this.k*.8
-    this.edge_on_hover = true
+    this.edge_on_hover = false
   }
 
   drawBorder(svg) {
@@ -926,13 +926,15 @@ class FeatureRatings2D extends SquareAudioGraph {
 
   getStroke(self, edge, l, i) {
     if ((l.source == i)|(l.target == i)) {
-      var stroke = 'rgba(0,0,0,1)'
-      var stroke_width = .5
+      // var stroke = 'rgba(0,0,0,1)'
+      // var stroke_width = .5
+      var stroke = self.getStrokeOn()
     } else {
-      var stroke = 'rgba(0,0,0,0)'
-      var stroke_width = 1
+      // var stroke = 'rgba(0,0,0,0)'
+      // var stroke_width = 1
+      var stroke = self.getStrokeOff()
     }
-    return [stroke, stroke_width]
+    return stroke
   }
 
   dragended(self, circle, d, i) {
@@ -962,6 +964,20 @@ class FeatureRatings2D extends SquareAudioGraph {
         this.links.push(link)
       }
     }
+  }
+
+  submitFcn() {
+    var i, j, pos, category
+    var results = []
+    for (i=0; i<this.nodes.length; i++) {
+      var x = (this.nodes[i].x-30)/this.r/2
+      var y = (this.nodes[i].y-30)/this.r/2
+      results.push({'id': this.nodes[i].id, 'audiofile': this.nodes[i].audiofile,
+                    'values': [x, y]})
+    }
+    this.submitResults({'type': 'features2d', 'trial_id': this.trial_id,
+                        'ratingtype': 'features2d',
+                        'results': results}, this.nextURL)
   }
 
   // mouseover(self, circle, style, d, i) {

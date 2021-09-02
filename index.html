@@ -9,99 +9,135 @@
         <script type="text/javascript" src="app/static/rating_graphical.js"></script>
         <link href="//cdn.jsdelivr.net/gh/jspsych/jsPsych/css/jspsych.css" rel="stylesheet" type="text/css">
     </head>
-    <body></body>
+    <body>
+      <div class='container' style='max-width: 750px;'>
+        <div style='text-align: center'>
+          <button class='jspsych-btn' onclick="presentExperiment('single_feature')">Single feature</button>
+        </div>
+      </div>
+    </body>
     <script>
 
-    var single_feature_trial = {
-        type: 'audio-ratings',
-        ratingtype: 'features',
-        stimuli: ['data/cven_00_02286_84473_617520.wav',
-                  'data/cven_01_08364_84473_528510.wav',
-                  'data/cven_03_26059_84473_17388318.wav',
-                  'data/cven_04_14644_84473_57886.wav'],
-        label: ['Feature 1'],
-        anchors: [['low', '', 'high']]
+    function getTrials() {
+
+      var single_feature_trial = {
+          type: 'audio-ratings',
+          ratingtype: 'features',
+          stimuli: ['data/cven_00_02286_84473_617520.wav',
+                    'data/cven_01_08364_84473_528510.wav',
+                    'data/cven_03_26059_84473_17388318.wav',
+                    'data/cven_04_14644_84473_57886.wav'],
+          label: ['Feature 1'],
+          anchors: [['low', '', 'high']]
+      }
+
+      var multiple_feature_trial = {
+          type: 'audio-ratings',
+          ratingtype: 'features',
+          stimuli: ['data/cven_05_14026_84473_17255724.wav',
+                    'data/cven_06_31405_84473_97708.wav',
+                    'data/cven_07_27838_84473_566483.wav',
+                    'data/cven_07_27838_84473_566483.wav'],
+          label: ['Feature 1', 'Feature 2', 'Feature 3'],
+          anchors: [['low', '', 'high'],
+                    ['low', '', 'high'],
+                    ['low', '', 'high']]
+      }
+
+      var features2d_trial = {
+          type: 'audio-ratings',
+          ratingtype: 'features2d',
+          stimuli: ['data/cven_05_14026_84473_17255724.wav',
+                    'data/cven_06_31405_84473_97708.wav',
+                    'data/cven_07_27838_84473_566483.wav',
+                    'data/cven_07_27838_84473_566483.wav'],
+          label: ['Feature 1', 'Feature 2'],
+          anchors: [['low', '', 'high'],
+                    ['low', '', 'high']]
+      }
+
+      var categories_trial = {
+          type: 'audio-ratings',
+          ratingtype: 'categories',
+          stimuli: ['data/cven_00_02286_84473_617520.wav',
+                    'data/cven_01_08364_84473_528510.wav',
+                    'data/cven_03_26059_84473_17388318.wav',
+                    'data/cven_04_14644_84473_57886.wav',
+                    'data/cven_05_14026_84473_17255724.wav',
+                    'data/cven_06_31405_84473_97708.wav',
+                    'data/cven_07_27838_84473_566483.wav',
+                    'data/cven_07_27838_84473_566483.wav'],
+          label: ['Category 1', 'Category 2'],
+      }
+
+      var cluster_trial = {
+          type: 'audio-ratings',
+          ratingtype: 'cluster',
+          stimuli: ['data/cven_00_02286_84473_617520.wav',
+                    'data/cven_01_08364_84473_528510.wav',
+                    'data/cven_03_26059_84473_17388318.wav',
+                    'data/cven_04_14644_84473_57886.wav',
+                    'data/cven_05_14026_84473_17255724.wav',
+                    'data/cven_06_31405_84473_97708.wav',
+                    'data/cven_07_27838_84473_566483.wav',
+                    'data/cven_07_27838_84473_566483.wav'],
+      }
+
+      var similarity_trial = {
+          type: 'audio-ratings',
+          ratingtype: 'similarity',
+          stimuli: ['data/cven_00_02286_84473_617520.wav',
+                    'data/cven_01_08364_84473_528510.wav',
+                    'data/cven_03_26059_84473_17388318.wav',
+                    'data/cven_04_14644_84473_57886.wav',
+                    'data/cven_05_14026_84473_17255724.wav',
+                    'data/cven_06_31405_84473_97708.wav',
+                    'data/cven_07_27838_84473_566483.wav',
+                    'data/cven_07_27838_84473_566483.wav'],
+      }
+
+      var triplets_trial = {
+          type: 'audio-ratings',
+          ratingtype: 'triplets',
+          stimuli: ['data/cven_00_02286_84473_617520.wav',
+                    'data/cven_01_08364_84473_528510.wav',
+                    'data/cven_03_26059_84473_17388318.wav',
+                    'data/cven_04_14644_84473_57886.wav',
+                    'data/cven_05_14026_84473_17255724.wav',
+                    'data/cven_06_31405_84473_97708.wav',
+                    'data/cven_07_27838_84473_566483.wav',
+                    'data/cven_07_27838_84473_566483.wav']
+      }
+
+      return {
+        'single_feature': single_feature_trial,
+        'multiple_feature': multiple_feature_trial,
+        'features2d': features2d_trial,
+        'categories': categories_trial,
+        'circlesort': cluster_trial,
+        'similarity': similarity_trial,
+        'triplets': triplets_trial
+      }
+
     }
 
-    var multiple_feature_trial = {
-        type: 'audio-ratings',
-        ratingtype: 'features',
-        stimuli: ['data/cven_05_14026_84473_17255724.wav',
-                  'data/cven_06_31405_84473_97708.wav',
-                  'data/cven_07_27838_84473_566483.wav',
-                  'data/cven_07_27838_84473_566483.wav'],
-        label: ['Feature 1', 'Feature 2', 'Feature 3'],
-        anchors: [['low', '', 'high'],
-                  ['low', '', 'high'],
-                  ['low', '', 'high']]
+    function presentExperiment(ratingtype) {
+      var trials = getTrials()
+      jsPsych.init({
+          timeline: [trials[ratingtype]],
+          // show_progress_bar: true,
+          on_finish: function() {
+            jsPsych.data.displayData();
+          }
+      })
     }
 
-    var circlesort_trial = {
-        type: 'audio-ratings',
-        ratingtype: 'cluster',
-        stimuli: ['data/cven_00_02286_84473_617520.wav',
-                  'data/cven_01_08364_84473_528510.wav',
-                  'data/cven_03_26059_84473_17388318.wav',
-                  'data/cven_04_14644_84473_57886.wav',
-                  'data/cven_05_14026_84473_17255724.wav',
-                  'data/cven_06_31405_84473_97708.wav',
-                  'data/cven_07_27838_84473_566483.wav',
-                  'data/cven_07_27838_84473_566483.wav'],
-    }
+    presentExperiment('categories')
 
-    var similarity_trial = {
-        type: 'audio-ratings',
-        ratingtype: 'similarity',
-        stimuli: ['data/cven_00_02286_84473_617520.wav',
-                  'data/cven_01_08364_84473_528510.wav',
-                  'data/cven_03_26059_84473_17388318.wav',
-                  'data/cven_04_14644_84473_57886.wav',
-                  'data/cven_05_14026_84473_17255724.wav',
-                  'data/cven_06_31405_84473_97708.wav',
-                  'data/cven_07_27838_84473_566483.wav',
-                  'data/cven_07_27838_84473_566483.wav'],
-    }
-
-    var categories_trial = {
-        type: 'audio-ratings',
-        ratingtype: 'categories',
-        stimuli: ['data/cven_00_02286_84473_617520.wav',
-                  'data/cven_01_08364_84473_528510.wav',
-                  'data/cven_03_26059_84473_17388318.wav',
-                  'data/cven_04_14644_84473_57886.wav',
-                  'data/cven_05_14026_84473_17255724.wav',
-                  'data/cven_06_31405_84473_97708.wav',
-                  'data/cven_07_27838_84473_566483.wav',
-                  'data/cven_07_27838_84473_566483.wav'],
-        label: ['Category 1', 'Category 2'],
-    }
-
-    var triplets_trial = {
-        type: 'audio-ratings',
-        ratingtype: 'triplets',
-        stimuli: ['data/cven_00_02286_84473_617520.wav',
-                  'data/cven_01_08364_84473_528510.wav',
-                  'data/cven_03_26059_84473_17388318.wav',
-                  'data/cven_04_14644_84473_57886.wav',
-                  'data/cven_05_14026_84473_17255724.wav',
-                  'data/cven_06_31405_84473_97708.wav',
-                  'data/cven_07_27838_84473_566483.wav',
-                  'data/cven_07_27838_84473_566483.wav']
-    }
-
-    jsPsych.init({
-        timeline: [
-          single_feature_trial,
-          multiple_feature_trial,
-          categories_trial,
-          circlesort_trial,
-          similarity_trial,
-          triplets_trial
-        ],
-        on_finish: function() {
-          jsPsych.data.displayData();
-        }
-    })
+    // var button = document.createElement("BUTTON");
+    // button.innerHTML = 'single_feature'
+    // button.className += 'jspsych-btn'
+    // document.getElementById("display-element").appendChild(button)
 
     </script>
 </html>

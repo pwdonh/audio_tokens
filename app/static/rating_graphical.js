@@ -122,7 +122,7 @@ class AudioGraph {
       if (!!document.getElementById(player_id)) {
         console.log('audiofile id already loaded')
       } else {
-        $('#'+this.audioContainerId).append('<audio id="'+player_id+'"></audio>')
+        document.getElementById(this.audioContainerId).innerHTML += '<audio id="'+player_id+'"></audio>'
         if (this.nodes[i].audiofile.length>0) {
           console.log(this.nodes[i].audiofile)
           showPlaybackTools(this.nodes[i].audiofile, this.nodes[i].id)

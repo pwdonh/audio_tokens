@@ -109,35 +109,26 @@
                     'data/cven_07_27838_84473_566483.wav']
       }
 
-      return {
-        'single_feature': single_feature_trial,
-        'multiple_feature': multiple_feature_trial,
-        'features2d': features2d_trial,
-        'categories': categories_trial,
-        'circlesort': cluster_trial,
-        'similarity': similarity_trial,
-        'triplets': triplets_trial
-      }
+      return [
+        single_feature_trial,
+        multiple_feature_trial,
+        features2d_trial,
+        categories_trial,
+        cluster_trial,
+        similarity_trial,
+        triplets_trial
+      ]
 
     }
 
-    function presentExperiment(ratingtype) {
-      var trials = getTrials()
-      jsPsych.init({
-          timeline: [trials[ratingtype]],
-          // show_progress_bar: true,
-          on_finish: function() {
-            jsPsych.data.displayData();
-          }
-      })
-    }
-
-    presentExperiment('categories')
-
-    // var button = document.createElement("BUTTON");
-    // button.innerHTML = 'single_feature'
-    // button.className += 'jspsych-btn'
-    // document.getElementById("display-element").appendChild(button)
+    var trials = getTrials()
+    jsPsych.init({
+        timeline: trials,
+        show_progress_bar: true,
+        on_finish: function() {
+          jsPsych.data.displayData();
+        }
+    })
 
     </script>
 </html>

@@ -109,21 +109,29 @@
                     'data/cven_07_27838_84473_566483.wav']
       }
 
-      return [
-        single_feature_trial,
-        multiple_feature_trial,
-        features2d_trial,
-        categories_trial,
-        cluster_trial,
-        similarity_trial,
-        triplets_trial
-      ]
+      return {
+        'single_feature': single_feature_trial,
+        'multiple_feature': multiple_feature_trial,
+        'features2d': features2d_trial,
+        'categories': categories_trial,
+        'circlesort': cluster_trial,
+        'similarity': similarity_trial,
+        'triplets': triplets_trial
+      }
 
     }
 
     var trials = getTrials()
     jsPsych.init({
-        timeline: trials,
+        timeline: [
+            trials['single_feature'],
+            trials['multiple_feature'],
+            trials['features2d'],
+            trials['categories'],
+            trials['circlesort'],
+            trials['similarity'],
+            trials['triplets'],
+        ],
         show_progress_bar: true,
         on_finish: function() {
           jsPsych.data.displayData();

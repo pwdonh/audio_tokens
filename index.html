@@ -127,13 +127,13 @@
     var ratingtype = url.searchParams.get('type')
     if (ratingtype==false) {
         var trials = [
-            trials['single_feature'],
-            trials['multiple_feature'],
-            trials['features2d'],
-            trials['categories'],
-            trials['circlesort'],
-            trials['similarity'],
-            trials['triplets'],
+            trials_all['single_feature'],
+            trials_all['multiple_feature'],
+            trials_all['features2d'],
+            trials_all['categories'],
+            trials_all['circlesort'],
+            trials_all['similarity'],
+            trials_all['triplets'],
         ]
     } else {
         var trials = [trials_all[ratingtype]]

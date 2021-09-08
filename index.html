@@ -135,13 +135,15 @@
             trials_all['similarity'],
             trials_all['triplets'],
         ]
+        var show_progress = true
     } else {
         var trials = [trials_all[ratingtype]]
+        var show_progress = false
     }
     
     jsPsych.init({
         timeline: trials,
-        show_progress_bar: true,
+        show_progress_bar: show_progress,
         on_finish: function() {
           jsPsych.data.displayData();
         }

@@ -49,7 +49,7 @@ jsPsych.plugins["audio-ratings"] = (function() {
     html += '<div class="container" style="margin-bottom:25px">'
     html += '<div class="d-flex justify-content-center">'
     html += '<div id="plot-speakers-div">'
-    html += '<svg id="plot-speakers" width="400" height="600">'
+    html += '<svg id="plot-speakers" width="400" height="400">'
     html += '</div>'
     html += '</div>'
     html += '<div id="audio-container"></div>'

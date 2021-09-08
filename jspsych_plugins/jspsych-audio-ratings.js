@@ -38,6 +38,13 @@ jsPsych.plugins["audio-ratings"] = (function() {
 
   plugin.trial = function(display_element, trial) {
 
+    var height = {'features': 150*trial.label.length,
+                  'cluster': 400,
+                  'similarity': 400,
+                  'features2d': 375,
+                  'categories': 225,
+                  'triplets': 150}
+
     var html = ''
 
     html += '<div class="container" style="margin-bottom:25px">'
@@ -49,7 +56,7 @@ jsPsych.plugins["audio-ratings"] = (function() {
     html += '<div class="container" style="margin-bottom:25px">'
     html += '<div class="d-flex justify-content-center">'
     html += '<div id="plot-speakers-div">'
-    html += '<svg id="plot-speakers" width="400" height="400">'
+    html += '<svg id="plot-speakers" width="400" height="'+height[trial.ratingtype]+'">'
     html += '</div>'
     html += '</div>'
     html += '<div id="audio-container"></div>'

@@ -121,23 +121,33 @@
 
     }
 
-    function presentExperiment(ratingtype) {
-      var trials = getTrials()
-      jsPsych.init({
-          timeline: [trials[ratingtype]],
-          // show_progress_bar: true,
-          on_finish: function() {
-            jsPsych.data.displayData();
-          }
-      })
+    var trials_all = getTrials()
+
+    var url = new URL(window.location.href)
+    var ratingtype = url.searchParams.get('type')
+    if (ratingtype==false) {
+        var trials = [
+            trials_all['single_feature'],
+            trials_all['multiple_feature'],
+            trials_all['features2d'],
+            trials_all['categories'],
+            trials_all['circlesort'],
+            trials_all['similarity'],
+            trials_all['triplets'],
+        ]
+        var show_progress = true
+    } else {
+        var trials = [trials_all[ratingtype]]
+        var show_progress = false
     }
 
-    presentExperiment('categories')
-
-    // var button = document.createElement("BUTTON");
-    // button.innerHTML = 'single_feature'
-    // button.className += 'jspsych-btn'
-    // document.getElementById("display-element").appendChild(button)
+    jsPsych.init({
+        timeline: trials,
+        show_progress_bar: show_progress,
+        on_finish: function() {
+          jsPsych.data.displayData();
+        }
+    })
 
     </script>
 </html>

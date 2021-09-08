@@ -121,9 +121,12 @@
 
     }
 
-    var trials = getTrials()
-    jsPsych.init({
-        timeline: [
+    var trials_all = getTrials()
+    
+    var url = new URL(window.location.href)
+    var ratingtype = url.searchParams.get('type')
+    if (ratingtype==false) {
+        var trials = [
             trials['single_feature'],
             trials['multiple_feature'],
             trials['features2d'],
@@ -131,7 +134,13 @@
             trials['circlesort'],
             trials['similarity'],
             trials['triplets'],
-        ],
+        ]
+    } else {
+        var trials = [trials_all[ratingtype]]
+    }
+    
+    jsPsych.init({
+        timeline: trials,
         show_progress_bar: true,
         on_finish: function() {
           jsPsych.data.displayData();

@@ -1,4 +1,22 @@
 
+## Example setup using JsPsych
+
+See the example code in index.html
+
+You can check it out e.g. using the simple python server 
+
+```
+python3 -m http.server
+```
+
+and open in the browser
+
+http://localhost:5000
+
+## Example setup using pure Javascript
+
+This is an example for using the pure Javascript version. The example uses a python (flask) server.
+
 ```
 python3 -m venv ./venv
 source ./venv/bin/activate

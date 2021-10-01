@@ -105,7 +105,7 @@ class AudioGraph {
                     'values': [x, y]})
     }
     this.submitResults({'type': 'circle', 'trial_id': this.trial_id,
-                        'ratingtype': 'similarity',
+                        'ratingtype': 'similarity', labels: '',
                         'results': results}, this.nextURL)
   }
 
@@ -564,7 +564,7 @@ class CircleSortGraph extends AudioGraph {
                     'values': [this.clusterIndex[i]]})
     }
     this.submitResults({'type': 'circlesort', 'trial_id': this.trial_id,
-                        'ratingtype': 'cluster',
+                        'ratingtype': 'cluster', 'labels': [''],
                         'results': results}, this.nextURL)
   }
 
@@ -777,7 +777,7 @@ class TripletAudioGraph extends SquareAudioGraph {
                     'values': [nodes[i].completed]})
     }
     this.submitResults({'type': 'triplet', 'trial_id': this.trial_id,
-                        'ratingtype': 'triplet',
+                        'ratingtype': 'triplet', 'labels': [''],
                         'results': results}, this.nextURL)
   }
 
@@ -860,7 +860,7 @@ class FreesortGraph extends SquareAudioGraph {
                     'values': [category]})
     }
     this.submitResults({'type': 'freesort', 'trial_id': this.trial_id,
-                        'ratingtype': 'categories',
+                        'ratingtype': 'categories', 'labels': this.feature_labels,
                         'results': results}, this.nextURL)
   }
 
@@ -976,7 +976,7 @@ class FeatureRatings2D extends SquareAudioGraph {
                     'values': [x, y]})
     }
     this.submitResults({'type': 'features2d', 'trial_id': this.trial_id,
-                        'ratingtype': 'features2d',
+                        'ratingtype': 'features2d', 'labels': this.feature_labels,
                         'results': results}, this.nextURL)
   }
 
@@ -1063,7 +1063,7 @@ class FeatureRatings extends SquareAudioGraph {
       }
     }
     this.submitResults({'type': 'features', 'trial_id': this.trial_id,
-                        'ratingtype': 'features',
+                        'ratingtype': 'features', 'labels': this.feature_labels,
                         'results': results}, this.nextURL)
   }
 
@@ -1629,8 +1629,18 @@ function submitResults(results, nextURL='') {
 function submitResultsJsPsych(results, nextURL) {
   // end trial
   // 'nextURL' variable is used to pass 'display_element' from jsPsych...
-  delete results.type
-  delete results.trial_id
+  var trial_data = {
+    stimuli: [],
+    ratings: [],
+    rt: 0.,
+    ratingtype: results.ratingtype,
+    labels: results.labels
+  }
+  for (var i=0; i<results.results.length; i++){
+    trial_data.stimuli.push(results.results[i].audiofile)
+    trial_data.ratings.push(results.results[i].values)
+  }
   nextURL.innerHTML = '';
-  jsPsych.finishTrial(results);
+  console.log(trial_data)
+  jsPsych.finishTrial(trial_data);
 }

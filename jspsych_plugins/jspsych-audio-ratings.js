@@ -104,7 +104,7 @@ jsPsych.plugins["audio-ratings"] = (function() {
                                     nextURL=display_element, isJsPsych=true,
                                     num_col=trial.label.length,
                                     item_spacing=12.5,
-                                    category_labels=trial.label)
+                                    feature_labels=trial.label)
     } else if (trial.ratingtype=='triplets') {
       var graph = new TripletAudioGraph(data, 'plot-speakers', 'audio-container',
                                         buttonContainerId='button-container',

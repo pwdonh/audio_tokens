@@ -106,7 +106,8 @@ class AudioGraph {
     }
     this.submitResults({'type': 'circle', 'trial_id': this.trial_id,
                         'ratingtype': 'similarity', labels: '',
-                        'results': results}, this.nextURL)
+                        'results': results, 'time': Date.now()-this.time_0},
+                        this.nextURL)
   }
 
   build() {
@@ -565,7 +566,8 @@ class CircleSortGraph extends AudioGraph {
     }
     this.submitResults({'type': 'circlesort', 'trial_id': this.trial_id,
                         'ratingtype': 'cluster', 'labels': [''],
-                        'results': results}, this.nextURL)
+                        'results': results, 'time': Date.now()-this.time_0},
+                        this.nextURL)
   }
 
 }
@@ -778,7 +780,8 @@ class TripletAudioGraph extends SquareAudioGraph {
     }
     this.submitResults({'type': 'triplet', 'trial_id': this.trial_id,
                         'ratingtype': 'triplet', 'labels': [''],
-                        'results': results}, this.nextURL)
+                        'results': results, 'time': Date.now()-this.time_0},
+                        this.nextURL)
   }
 
 }
@@ -861,7 +864,8 @@ class FreesortGraph extends SquareAudioGraph {
     }
     this.submitResults({'type': 'freesort', 'trial_id': this.trial_id,
                         'ratingtype': 'categories', 'labels': this.feature_labels,
-                        'results': results}, this.nextURL)
+                        'results': results, 'time': Date.now()-this.time_0},
+                        this.nextURL)
   }
 
   boundary(self,x,y,i) {
@@ -977,7 +981,8 @@ class FeatureRatings2D extends SquareAudioGraph {
     }
     this.submitResults({'type': 'features2d', 'trial_id': this.trial_id,
                         'ratingtype': 'features2d', 'labels': this.feature_labels,
-                        'results': results}, this.nextURL)
+                        'results': results, 'time': Date.now()-this.time_0},
+                        this.nextURL)
   }
 
   // mouseover(self, circle, style, d, i) {
@@ -1064,7 +1069,8 @@ class FeatureRatings extends SquareAudioGraph {
     }
     this.submitResults({'type': 'features', 'trial_id': this.trial_id,
                         'ratingtype': 'features', 'labels': this.feature_labels,
-                        'results': results}, this.nextURL)
+                        'results': results, 'time': Date.now()-this.time_0},
+                        this.nextURL)
   }
 
   num_colors() {
@@ -1629,18 +1635,22 @@ function submitResults(results, nextURL='') {
 function submitResultsJsPsych(results, nextURL) {
   // end trial
   // 'nextURL' variable is used to pass 'display_element' from jsPsych...
+
   var trial_data = {
     stimuli: [],
     ratings: [],
-    rt: 0.,
+    rt: results.time,
     ratingtype: results.ratingtype,
     labels: results.labels
   }
   for (var i=0; i<results.results.length; i++){
     trial_data.stimuli.push(results.results[i].audiofile)
-    trial_data.ratings.push(results.results[i].values)
+    if (results.results[i].values.length==1){
+      trial_data.ratings.push(results.results[i].values[0])
+    } else {
+      trial_data.ratings.push(results.results[i].values)
+    }
   }
   nextURL.innerHTML = '';
-  console.log(trial_data)
   jsPsych.finishTrial(trial_data);
 }

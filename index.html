@@ -3,11 +3,11 @@
     <head>
         <title>My experiment</title>
         <!-- Loading jspsych.js from github, use own copy instead -->
-        <script src="//cdn.jsdelivr.net/gh/jspsych/jsPsych/jspsych.js"></script>
-        <script src="jspsych_plugins/jspsych-audio-ratings.js"></script>
+        <script src="js/jspsych.js"></script>
+        <script src="js/jspsych-audio-ratings.js"></script>
+        <script src="js/audio-ratings.js"></script>
         <script src="//d3js.org/d3.v4.min.js"></script>
-        <script type="text/javascript" src="app/static/audio-ratings.js"></script>
-        <link href="//cdn.jsdelivr.net/gh/jspsych/jsPsych/css/jspsych.css" rel="stylesheet" type="text/css">
+        <link href="css/jspsych.css" rel="stylesheet" type="text/css">
     </head>
     <body>
     </body>
@@ -86,7 +86,7 @@
       ]
 
       jsPsych.init({
-          timeline: trials,
+          timeline: timeline,
           show_progress_bar: true,
           on_finish: function() {
             jsPsych.data.displayData();

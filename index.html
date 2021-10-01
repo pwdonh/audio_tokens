@@ -13,15 +13,20 @@
     </body>
     <script>
 
-    function getTrials() {
+      var stimuli = ['data/cven_00_02286_84473_617520.wav',
+                     'data/cven_03_26059_84473_17388318.wav',
+                     'data/cven_05_14026_84473_17255724.wav',
+                     'data/cven_06_31405_84473_97708.wav',
+                     'data/cven_07_27838_84473_566483.wav',
+                     'data/cven_08_19497_84473_17246733.wav',
+                     'data/cven_09_26764_84473_17637624.wav',
+                     'data/cven_10_19680_84473_665433.wav',
+                     'data/cven_17_17551_84473_512103.wav']
 
       var single_feature_trial = {
           type: 'audio-ratings',
           ratingtype: 'features',
-          stimuli: ['data/cven_00_02286_84473_617520.wav',
-                    'data/cven_03_26059_84473_17388318.wav',
-                    'data/cven_05_14026_84473_17255724.wav',
-                    'data/cven_06_31405_84473_97708.wav'],
+          stimuli: stimuli.slice(0,4),
           label: ['Feature 1'],
           anchors: [['low', '', 'high']]
       }
@@ -29,10 +34,7 @@
       var multiple_feature_trial = {
           type: 'audio-ratings',
           ratingtype: 'features',
-          stimuli: ['data/cven_00_02286_84473_617520.wav',
-                    'data/cven_03_26059_84473_17388318.wav',
-                    'data/cven_05_14026_84473_17255724.wav',
-                    'data/cven_06_31405_84473_97708.wav'],
+          stimuli: stimuli.slice(0,4),
           label: ['Feature 1', 'Feature 2', 'Feature 3'],
           anchors: [['low', '', 'high'],
                     ['low', '', 'high'],
@@ -42,10 +44,7 @@
       var features2d_trial = {
           type: 'audio-ratings',
           ratingtype: 'features2d',
-          stimuli: ['data/cven_00_02286_84473_617520.wav',
-                    'data/cven_03_26059_84473_17388318.wav',
-                    'data/cven_05_14026_84473_17255724.wav',
-                    'data/cven_06_31405_84473_97708.wav'],
+          stimuli: stimuli,
           label: ['Feature 1', 'Feature 2'],
           anchors: [['low', '', 'high'],
                     ['low', '', 'high']]
@@ -54,99 +53,45 @@
       var categories_trial = {
           type: 'audio-ratings',
           ratingtype: 'categories',
-          stimuli: ['data/cven_00_02286_84473_617520.wav',
-                    'data/cven_03_26059_84473_17388318.wav',
-                    'data/cven_05_14026_84473_17255724.wav',
-                    'data/cven_06_31405_84473_97708.wav',
-                    'data/cven_07_27838_84473_566483.wav',
-                    'data/cven_08_19497_84473_17246733.wav',
-                    'data/cven_09_26764_84473_17637624.wav',
-                    'data/cven_10_19680_84473_665433.wav',
-                    'data/cven_17_17551_84473_512103.wav'],
+          stimuli: stimuli,
           label: ['Category 1', 'Category 2'],
       }
 
       var cluster_trial = {
           type: 'audio-ratings',
           ratingtype: 'cluster',
-          stimuli: ['data/cven_00_02286_84473_617520.wav',
-                    'data/cven_03_26059_84473_17388318.wav',
-                    'data/cven_05_14026_84473_17255724.wav',
-                    'data/cven_06_31405_84473_97708.wav',
-                    'data/cven_07_27838_84473_566483.wav',
-                    'data/cven_08_19497_84473_17246733.wav',
-                    'data/cven_09_26764_84473_17637624.wav',
-                    'data/cven_10_19680_84473_665433.wav',
-                    'data/cven_17_17551_84473_512103.wav'],
+          stimuli: stimuli,
       }
 
       var similarity_trial = {
           type: 'audio-ratings',
           ratingtype: 'similarity',
-          stimuli: ['data/cven_00_02286_84473_617520.wav',
-                    'data/cven_03_26059_84473_17388318.wav',
-                    'data/cven_05_14026_84473_17255724.wav',
-                    'data/cven_06_31405_84473_97708.wav',
-                    'data/cven_07_27838_84473_566483.wav',
-                    'data/cven_08_19497_84473_17246733.wav',
-                    'data/cven_09_26764_84473_17637624.wav',
-                    'data/cven_10_19680_84473_665433.wav',
-                    'data/cven_17_17551_84473_512103.wav'],
+          stimuli: stimuli,
       }
 
       var triplets_trial = {
           type: 'audio-ratings',
           ratingtype: 'triplets',
-          stimuli: ['data/cven_00_02286_84473_617520.wav',
-                    'data/cven_03_26059_84473_17388318.wav',
-                    'data/cven_05_14026_84473_17255724.wav',
-                    'data/cven_06_31405_84473_97708.wav',
-                    'data/cven_07_27838_84473_566483.wav',
-                    'data/cven_08_19497_84473_17246733.wav',
-                    'data/cven_09_26764_84473_17637624.wav',
-                    'data/cven_10_19680_84473_665433.wav',
-                    'data/cven_17_17551_84473_512103.wav']
+          stimuli: stimuli
       }
 
-      return {
-        'single_feature': single_feature_trial,
-        'multiple_feature': multiple_feature_trial,
-        'features2d': features2d_trial,
-        'categories': categories_trial,
-        'cluster': cluster_trial,
-        'similarity': similarity_trial,
-        'triplets': triplets_trial
-      }
+      var timeline = [
+        single_feature_trial,
+        multiple_feature_trial,
+        features2d_trial,
+        categories_trial,
+        cluster_trial,
+        similarity_trial,
+        triplets_trial
+      ]
 
-    }
-
-    var trials_all = getTrials()
-
-    var url = new URL(window.location.href)
-    var ratingtype = url.searchParams.get('type')
-    if (ratingtype==false) {
-        var trials = [
-            trials_all['single_feature'],
-            trials_all['multiple_feature'],
-            trials_all['features2d'],
-            trials_all['categories'],
-            trials_all['cluster'],
-            trials_all['similarity'],
-            trials_all['triplets'],
-        ]
-        var show_progress = true
-    } else {
-        var trials = [trials_all[ratingtype]]
-        var show_progress = false
-    }
-
-    jsPsych.init({
-        timeline: trials,
-        show_progress_bar: show_progress,
-        on_finish: function() {
-          jsPsych.data.displayData();
-        }
-    })
+      jsPsych.init({
+          timeline: trials,
+          show_progress_bar: true,
+          on_finish: function() {
+            jsPsych.data.displayData();
+          }
+      })
 
     </script>
 </html>

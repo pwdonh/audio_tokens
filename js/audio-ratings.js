@@ -34,6 +34,8 @@ class AudioGraph {
     this.r = this.width/2-30
 
     this.play = true
+    this.highlighted = -1
+    this.hovered = -1
 
     this.style = {
       'border_width_1': 1,
@@ -270,7 +272,7 @@ class AudioGraph {
     var self = this
 
     var svg = d3.select('#'+self.parentId+'-svg')
-    var circles = svg.selectAll('circle')
+    var circles = svg.selectAll('.node')
 
     circles.on("mouseover", function(d, i) {
       self.mouseover(self, this, style, d, i)
@@ -287,11 +289,13 @@ class AudioGraph {
     // if (self.audioCtx.state === 'suspended') {
     //     self.audioCtx.resume();
     // }
-    if (self.play) {
+    self.hovered = i
+    if ((self.highlighted==-1)&(!self.is_dragged)) {
       if (self.player) {
         self.player.pause()
       }
       self.player = document.getElementById("page-audio-"+circle.id)
+      self.highlighted = i
       self.player.play()
       d3.select(circle)
        .attr("r", self.circle_size_2(self, d))
@@ -304,15 +308,19 @@ class AudioGraph {
   }
 
   mouseout(self, circle, style, d) {
-    self.edgeHide(self)
-    self.player.pause()
-    self.player.currentTime = 0
-    d3.select(circle)
-      // .attr("r", self.circle_size_1())
-      .attr("r", self.circle_size_1(self, d))
-      .style("stroke", style.border_color_1)
-      .style("stroke-width", style.border_width_1)
-    self.edgeHide()
+    if ((self.highlighted==self.hovered)&(!self.is_dragged)) {
+      self.edgeHide(self)
+      self.player.pause()
+      self.player.currentTime = 0
+      self.highlighted = -1
+      d3.select(circle)
+        // .attr("r", self.circle_size_1())
+        .attr("r", self.circle_size_1(self, d))
+        .style("stroke", style.border_color_1)
+        .style("stroke-width", style.border_width_1)
+      self.edgeHide()
+    }
+    self.hovered = -1
   }
 
   boundary(self,x,y,i) {
@@ -378,6 +386,7 @@ class AudioGraph {
 
   dragstarted(self, circle, d, i) {
     d3.select(circle).raise().classed("active", true);
+    self.is_dragged = true
   }
 
   dragged(self, circle, d, i) {
@@ -394,6 +403,11 @@ class AudioGraph {
      self.edgeHide(self)
      if (self.all_in(self)) {
        self.readyFcn()
+     }
+     self.is_dragged = false
+     if (self.highlighted!=self.hovered) {
+       self.hovered = self.highlighted
+       self.mouseout(self, circle, self.style, d)
      }
   }
 
@@ -467,7 +481,6 @@ class CircleSortGraph extends AudioGraph {
     this.num_clusters = 0
     this.last_cluster = 0
     this.clusterIndex = Array(self.num_items)
-    console.log(this.nodes)
   }
 
   get_num_in(self) {
@@ -509,7 +522,6 @@ class CircleSortGraph extends AudioGraph {
      self.edgeHide(self)
      self.num_in = self.get_num_in(self)
      self.update_clusters(self, i)
-     console.log(self.clusterIndex)
      self.min_len = Math.max(40, self.max_len/(1+self.num_in))
      if (self.all_in(self)) {
        self.readyFcn()
@@ -535,7 +547,6 @@ class CircleSortGraph extends AudioGraph {
   edgeUpdateDrag(self, d, i, x, y) {
     var nn = self.getNearestNeighbor(self, i)
     var cluster = self.clusterIndex[nn]
-    console.log(cluster)
     self.edges.each(function(l, li) {
       if (l.source == i) {
         d3.select(this).attr("x1", d.x = x).attr("y1", d.y = y);
@@ -1379,7 +1390,7 @@ class AudioGraphStatic3d extends AudioGraphStatic {
   dragstarted(self){
     self.mx = d3.event.x;
     self.my = d3.event.y;
-    self.play = false
+    self.is_dragged = true
   }
 
   dragged(self){
@@ -1397,7 +1408,7 @@ class AudioGraphStatic3d extends AudioGraphStatic {
   dragended(self){
     self.mouseX = d3.event.x - self.mx + self.mouseX;
     self.mouseY = d3.event.y - self.my + self.mouseY;
-    self.play = true
+    self.is_dragged = false
   }
 
   update_nodes(self, svg) {

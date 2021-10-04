@@ -36,6 +36,8 @@ class AudioGraph {
     this.play = true
     this.highlighted = -1
     this.hovered = -1
+    this.d_next = -1
+    this.circle_next = -1
 
     this.style = {
       'border_width_1': 1,
@@ -290,6 +292,8 @@ class AudioGraph {
     //     self.audioCtx.resume();
     // }
     self.hovered = i
+    self.d_next = d
+    self.circle_next = circle
     if ((self.highlighted==-1)&(!self.is_dragged)) {
       if (self.player) {
         self.player.pause()
@@ -404,11 +408,20 @@ class AudioGraph {
      if (self.all_in(self)) {
        self.readyFcn()
      }
-     self.is_dragged = false
-     if (self.highlighted!=self.hovered) {
-       self.hovered = self.highlighted
-       self.mouseout(self, circle, self.style, d)
-     }
+     self.handle_dragend(self, circle, d, i)
+  }
+
+  handle_dragend(self, circle, d, i) {
+    self.is_dragged = false
+    if (self.highlighted!=self.hovered) {
+      var next = self.hovered
+      self.hovered = self.highlighted
+      self.mouseout(self, circle, self.style, d)
+      if (next!=-1) {
+        var selection = self.svg.selectAll('.node')
+        self.mouseover(self, self.circle_next, self.style, self.d_next, next)
+      }
+    }
   }
 
   getStroke(self, edge, l, i) {
@@ -526,11 +539,7 @@ class CircleSortGraph extends AudioGraph {
      if (self.all_in(self)) {
        self.readyFcn()
      }
-     self.is_dragged = false
-     if (self.highlighted!=self.hovered) {
-       self.hovered = self.highlighted
-       self.mouseout(self, circle, self.style, d)
-     }
+     self.handle_dragend(self, circle, d, i)
   }
 
   getNearestNeighbor(self, i) {

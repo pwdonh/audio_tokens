@@ -318,7 +318,7 @@ class AudioGraph {
         .attr("r", self.circle_size_1(self, d))
         .style("stroke", style.border_color_1)
         .style("stroke-width", style.border_width_1)
-      self.edgeHide()
+      // self.edgeHide()
     }
     self.hovered = -1
   }
@@ -525,6 +525,11 @@ class CircleSortGraph extends AudioGraph {
      self.min_len = Math.max(40, self.max_len/(1+self.num_in))
      if (self.all_in(self)) {
        self.readyFcn()
+     }
+     self.is_dragged = false
+     if (self.highlighted!=self.hovered) {
+       self.hovered = self.highlighted
+       self.mouseout(self, circle, self.style, d)
      }
   }
 

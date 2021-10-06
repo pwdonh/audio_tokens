@@ -34,6 +34,7 @@ class AudioGraph {
     this.hovered = -1
     this.d_next = -1
     this.circle_next = -1
+    this.audios = []
 
     this.style = {
       'border_width_1': 1,
@@ -98,7 +99,9 @@ class AudioGraph {
       var x = (this.nodes[i].x-this.h)/this.r/2
       var y = (this.nodes[i].y-this.k)/this.r/2
       results.push({'id': this.nodes[i].id, 'audiofile': this.nodes[i].audiofile,
-                    'values': [x, y], 'elapsed': this.nodes[i].elapsed})
+                    'values': [x, y], 
+                    'elapsed': this.audios[i].elapsed,
+                    'duration': this.audios[i].duration})
     }
     this.submitResults({'type': 'circle', 'trial_id': this.trial_id,
                         'ratingtype': 'similarity', labels: '',
@@ -132,6 +135,7 @@ class AudioGraph {
       if (!!document.getElementById(player_id)) {
         console.log('audiofile id already loaded')
       } else {
+        this.audios.push({duration: 0., elapsed: 0., started: 0.})
         document.getElementById(this.audioContainerId).innerHTML += '<audio id="'+player_id+'"></audio>'
         if (this.nodes[i].audiofile.length>0) {
           showPlaybackTools(this.nodes[i].audiofile, this.nodes[i].id)
@@ -142,6 +146,9 @@ class AudioGraph {
       this.nodes[i].duration = 0.
       this.nodes[i].elapsed = 0.
       this.nodes[i].started = 0
+      if (!('audioindex' in this.nodes[i])) {
+        this.nodes[i].audioindex = i
+      }
     }
   }
 
@@ -250,7 +257,7 @@ class AudioGraph {
                      .attr("id", function(d) {return d.id})
                      .attr("r", function(d, i) {return self.circle_size_1(self, d)})
                      // .attr("r", this.circle_size_1())
-                     // .style("opacity", self.opacity)
+                     .style("opacity", this.opacity)
                      .style("stroke", 'black')
                      .style("stroke-width", self.style.border_width_1)
     return circles
@@ -286,10 +293,9 @@ class AudioGraph {
       if (self.player) {
         self.player.pause()
       }
-      d.started = Date.now()
+      self.audios[d.audioindex].started = Date.now()
       self.player = document.getElementById("page-audio-"+circle.id)
       self.highlighted = i
-      d.duration = self.player.duration
       self.player.play()
       d3.select(circle)
        .attr("r", self.circle_size_2(self, d))
@@ -303,15 +309,26 @@ class AudioGraph {
 
   mouseout(self, circle, style, d) {
     if ((self.highlighted==self.hovered)&(!self.is_dragged)) {
-      d.elapsed += (Date.now()-d.started)/1000.
+      var audio = self.audios[d.audioindex]
+      audio.elapsed += (Date.now()-audio.started)/1000.
+      // console.log(audio.elapsed)
       self.edgeHide(self)
       self.player.pause()
+      audio.duration = self.player.duration
+      if (audio.elapsed>audio.duration) {
+        var opacity = 1.
+      } else {
+        var opacity = this.opacity
+      }
       // self.player.currentTime = 0
       self.highlighted = -1
       d3.select(circle)
         .attr("r", self.circle_size_1(self, d))
         .style("stroke", style.border_color_1)
         .style("stroke-width", style.border_width_1)
+      d3.selectAll('.node')
+        .filter(function(dd) { return dd.audioindex == d.audioindex; })
+        .style("opacity", opacity)
     }
     self.hovered = -1
   }
@@ -341,7 +358,12 @@ class AudioGraph {
   all_in(self) {
      var is_done = true
      var i = 0
+     var audio
      while (is_done & (i<self.nodes.length)) {
+       var player = document.getElementById('page-audio-'+String(self.nodes[i].id))
+       audio = self.audios[self.nodes[i].audioindex]
+       audio.duration = player.duration
+       var is_listened = audio.elapsed>audio.duration
        var circle = document.getElementById(String(self.nodes[i].id))
        var x = circle.cx.animVal.value
        var y = circle.cy.animVal.value
@@ -562,8 +584,8 @@ class CircleSortGraph extends AudioGraph {
     for (i=0; i<this.nodes.length; i++) {
       results.push({'id': this.nodes[i].id, 'audiofile': this.nodes[i].audiofile,
                     'values': [this.clusterIndex[i]], 
-                    'elapsed': this.nodes[i].elapsed,
-                    'duration': this.nodes[i].duration})
+                    'elapsed': this.audios[i].elapsed,
+                    'duration': this.audios[i].duration})
     }
     this.submitResults({'type': 'circlesort', 'trial_id': this.trial_id,
                         'ratingtype': 'cluster', 'labels': [''],
@@ -776,8 +798,8 @@ class TripletAudioGraph extends SquareAudioGraph {
     for (i=0; i<nodes.length; i++) {
       results.push({'id': nodes[i].id, 'audiofile': this.nodes[i].audiofile,
                     'values': [nodes[i].completed], 
-                    'elapsed': this.nodes[i].elapsed,
-                    'duration': this.nodes[i].duration})
+                    'elapsed': this.audios[i].elapsed,
+                    'duration': this.audios[i].duration})
     }
     this.submitResults({'type': 'triplet', 'trial_id': this.trial_id,
                         'ratingtype': 'triplet', 'labels': [''],
@@ -862,8 +884,8 @@ class FreesortGraph extends SquareAudioGraph {
       category = pos[0]+this.num_col*(pos[1])
       results.push({'id': this.nodes[i].id, 'audiofile': this.nodes[i].audiofile,
                     'values': [category], 
-                    'elapsed': this.nodes[i].elapsed,
-                    'duration': this.nodes[i].duration})
+                    'elapsed': this.audios[i].elapsed,
+                    'duration': this.audios[i].duration})
     }
     this.submitResults({'type': 'freesort', 'trial_id': this.trial_id,
                         'ratingtype': 'categories', 'labels': this.feature_labels,
@@ -982,8 +1004,8 @@ class FeatureRatings2D extends SquareAudioGraph {
       var y = (this.nodes[i].y-30)/this.r/2
       results.push({'id': this.nodes[i].id, 'audiofile': this.nodes[i].audiofile,
                     'values': [x, y], 
-                    'elapsed': this.nodes[i].elapsed,
-                    'duration': this.nodes[i].duration})
+                    'elapsed': this.audios[i].elapsed,
+                    'duration': this.audios[i].duration})
     }
     this.submitResults({'type': 'features2d', 'trial_id': this.trial_id,
                         'ratingtype': 'features2d', 'labels': this.feature_labels,
@@ -1035,7 +1057,8 @@ class FeatureRatings extends SquareAudioGraph {
     var i, j
     for (i=0; i<data.nodes.length; i++) {
       for (j=0; j<num_features; j++) {
-        nodescopy.push({'id': data.nodes[i].id, 'audiofile': data.nodes[i].audiofile, 'x': data.nodes[i].x, 'y': []})
+        nodescopy.push({'id': data.nodes[i].id, 'audiofile': data.nodes[i].audiofile, 
+                        'x': data.nodes[i].x, 'y': [], 'audioindex': i})
       }
     }
     data.nodes = nodescopy
@@ -1068,8 +1091,8 @@ class FeatureRatings extends SquareAudioGraph {
       results.push({'id': this.nodes[i*this.num_features].id,
                     'audiofile': this.nodes[i*this.num_features].audiofile,
                     'values': [], 
-                    'elapsed': this.nodes[i].elapsed,
-                    'duration': this.nodes[i].duration})
+                    'elapsed': this.audios[i].elapsed,
+                    'duration': this.audios[i].duration})
       for (j=0; j<this.num_features; j++) {
         var x = (this.nodes[i*this.num_features+j].x-this.h+this.r)/this.r/2
         results[i].values.push(x)

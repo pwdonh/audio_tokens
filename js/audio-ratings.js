@@ -954,6 +954,7 @@ class FeatureRatings2D extends SquareAudioGraph {
      if (self.all_in(self)) {
        self.readyFcn()
      }
+     self.handle_dragend(self, circle, d, i)
   }
 
   layout() {

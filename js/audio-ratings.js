@@ -2,7 +2,7 @@ class AudioGraph {
 
   constructor(data, parentId, audioContainerId, buttonContainerId='',
               draw_edges=true, trial_id='', width=400, nextURL='',
-              isJsPsych=false) {
+              opacity=1., isJsPsych=false) {
 
     this.num_items = data.nodes.length;
     this.nodes = data.nodes
@@ -11,7 +11,7 @@ class AudioGraph {
     this.buttonContainerId = buttonContainerId
     this.draw_edges = draw_edges
     this.trial_id = trial_id
-    this.opacity = 1.0
+    this.opacity = opacity
     this.nextURL = nextURL
     if (isJsPsych) {
         this.buttonClass = "jspsych-btn"
@@ -247,6 +247,7 @@ class AudioGraph {
 
   draw_nodes(self, svg) {
     var colorpalette = self.get_colorpalette(self)
+    console.log(self.opacity)
     var circles = svg.selectAll("node")
                      .data(self.nodes).enter()
                      .append("circle")
@@ -483,9 +484,9 @@ class CircleSortGraph extends AudioGraph {
 
   constructor(data, parentId, audioContainerId, buttonContainerId='',
               draw_edges=true, trial_id='', width=400, nextURL='',
-              isJsPsych=false) {
+              opacity=1., isJsPsych=false) {
     super(data, parentId, audioContainerId, buttonContainerId,
-          draw_edges, trial_id, width, nextURL, isJsPsych)
+          draw_edges, trial_id, width, nextURL, opacity=opacity, isJsPsych)
     this.num_in = 0
     this.num_clusters = 0
     this.last_cluster = 0
@@ -646,9 +647,9 @@ class TripletStaticAudioGraph extends SquareAudioGraph {
 
   constructor(data, parentId, audioContainerId, buttonContainerId='',
               draw_edges=true, trial_id='', width=400, nextURL='',
-              isJsPsych=false) {
+              opacity=1., isJsPsych=false) {
     super(data, parentId, audioContainerId, buttonContainerId,
-                draw_edges, trial_id, width, nextURL, isJsPsych)
+                draw_edges, trial_id, width, nextURL, opacity=opacity, isJsPsych)
     this.height = this.r/3+60
   }
 
@@ -687,9 +688,9 @@ class TripletAudioGraph extends SquareAudioGraph {
 
   constructor(data, parentId, audioContainerId, buttonContainerId='',
               draw_edges=true, trial_id='', width=400, nextURL='',
-              isJsPsych=false) {
+              opacity=1., isJsPsych=false) {
     super(data, parentId, audioContainerId, buttonContainerId,
-                draw_edges, trial_id, width, nextURL, isJsPsych)
+                draw_edges, trial_id, width, nextURL, opacity=opacity, isJsPsych)
     this.height = this.r/3+60
   }
 
@@ -812,10 +813,10 @@ class TripletAudioGraph extends SquareAudioGraph {
 class FreesortGraph extends SquareAudioGraph {
 
   constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=false,
-              trial_id='', width=400, nextURL='', isJsPsych=false,
+              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false,
               num_col=4, item_spacing=7.5, feature_labels=['']) {
     super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
-          trial_id, width, nextURL, isJsPsych)
+          trial_id, width, nextURL, opacity=opacity, isJsPsych)
     this.r = this.width/2-30
     this.num_col = num_col
     this.box_width = (this.r*2-45-(num_col-1)*item_spacing)/num_col
@@ -910,9 +911,9 @@ class FeatureRatings2D extends SquareAudioGraph {
 
   constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=true,
               feature_labels=[''], feature_anchors=[['','','']],
-              trial_id='', width=400, nextURL='', isJsPsych=false) {
+              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false) {
     super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
-          trial_id, width, nextURL, isJsPsych)
+          trial_id, width, nextURL, opacity=opacity, isJsPsych)
     this.feature_labels = feature_labels
     this.feature_anchors = feature_anchors
     this.r = (this.r+30)*.8-30
@@ -1051,7 +1052,7 @@ class FeatureRatings extends SquareAudioGraph {
   constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=true,
               num_features=3, feature_labels=[''], feature_anchors=[['','','']],
               item_spacing=7.5, trial_id='', width=400, nextURL='',
-              isJsPsych=false) {
+              opacity=1., isJsPsych=false) {
     var num_audio = data.nodes.length
     var nodescopy = []
     var i, j
@@ -1063,7 +1064,7 @@ class FeatureRatings extends SquareAudioGraph {
     }
     data.nodes = nodescopy
     super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
-          trial_id, width, nextURL, isJsPsych)
+          trial_id, width, nextURL, opacity=opacity, isJsPsych)
     this.r = this.width/2-60
     this.feature_height = num_audio*item_spacing
     if (num_features>1) {
@@ -1214,9 +1215,9 @@ class FeatureRatingsStatic extends FeatureRatings {
 class AudioGraphStatic extends SquareAudioGraph {
 
   constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=false,
-              trial_id='', width=400, nextURL='', isJsPsych=false) {
+              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false) {
     super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
-          trial_id, width, nextURL, isJsPsych)
+          trial_id, width, nextURL, opacity=opacity, isJsPsych)
     this.opacity = .85
   }
 
@@ -1261,9 +1262,9 @@ class AudioGraphStatic extends SquareAudioGraph {
 class AudioGraphMultipleStatic extends AudioGraphStatic {
 
   constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=false,
-              trial_id='', width=400, nextURL='', isJsPsych=false) {
+              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false) {
     super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
-          trial_id, width, nextURL, isJsPsych)
+          trial_id, width, nextURL, opacity=opacity, isJsPsych)
 
     this.height = width/2
 
@@ -1332,9 +1333,9 @@ class AudioGraphMultipleStatic extends AudioGraphStatic {
 class AudioGraphStatic3d extends AudioGraphStatic {
 
   constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=false,
-              trial_id='', width=400, nextURL='', isJsPsych=false) {
+              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false) {
     super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
-          trial_id, width, nextURL, isJsPsych)
+          trial_id, width, nextURL, opacity=opacity, isJsPsych)
     var startAngle = Math.PI, scale = 1, key = function(d){ return d.id; }
     this.startAngle = startAngle
     this.xangle = startAngle

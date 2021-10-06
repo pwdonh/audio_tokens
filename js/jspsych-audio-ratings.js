@@ -38,6 +38,7 @@ jsPsych.plugins["audio-ratings"] = (function() {
 
   plugin.trial = function(display_element, trial) {
 
+    var opacity = 1.
     var height = {'features': 150*trial.label.length,
                   'cluster': 400,
                   'similarity': 400,
@@ -74,12 +75,14 @@ jsPsych.plugins["audio-ratings"] = (function() {
       var graph = new CircleSortGraph(data, 'plot-speakers', 'audio-container',
                                       buttonContainerId='button-container',
                                       draw_edges=true, trial_id='', width=400,
-                                      nextURL=display_element, isJsPsych=true)
+                                      nextURL=display_element, 
+                                      opacity=opacity, isJsPsych=true)
     } else if (trial.ratingtype=='similarity') {
       var graph = new AudioGraph(data, 'plot-speakers', 'audio-container',
                                    buttonContainerId='button-container',
                                    draw_edges=true, trial_id='', width=400,
-                                   nextURL=display_element, isJsPsych=true)
+                                   nextURL=display_element, 
+                                   opacity=opacity, isJsPsych=true)
     } else if (trial.ratingtype=='features') {
       var graph = new FeatureRatings(data, 'plot-speakers', 'audio-container',
                                      buttonContainerId='button-container',
@@ -88,7 +91,8 @@ jsPsych.plugins["audio-ratings"] = (function() {
                                      feature_labels=trial.label,
                                      feature_anchors=trial.anchors,
                                      item_spacing=7.5, trial_id='', width=400,
-                                     nextURL=display_element, isJsPsych=true)
+                                     nextURL=display_element, 
+                                     opacity=opacity, isJsPsych=true)
     } else if (trial.ratingtype=='features2d') {
       var graph = new FeatureRatings2D(data, 'plot-speakers', 'audio-container',
                                        buttonContainerId='button-container',
@@ -96,12 +100,14 @@ jsPsych.plugins["audio-ratings"] = (function() {
                                        feature_labels=trial.label,
                                        feature_anchors=trial.anchors,
                                        trial_id='', width=400,
-                                       nextURL=display_element, isJsPsych=true)
+                                       nextURL=display_element, 
+                                       opacity=opacity, isJsPsych=true)
     } else if (trial.ratingtype=='categories') {
       var graph = new FreesortGraph(data, 'plot-speakers', 'audio-container',
                                     buttonContainerId='button-container',
                                     draw_edges=false, trial_id='', width=400,
-                                    nextURL=display_element, isJsPsych=true,
+                                    nextURL=display_element, 
+                                    opacity=opacity, isJsPsych=true,
                                     num_col=trial.label.length,
                                     item_spacing=12.5,
                                     feature_labels=trial.label)
@@ -109,7 +115,8 @@ jsPsych.plugins["audio-ratings"] = (function() {
       var graph = new TripletAudioGraph(data, 'plot-speakers', 'audio-container',
                                         buttonContainerId='button-container',
                                         draw_edges=true, trial_id='', width=400,
-                                        nextURL=display_element, isJsPsych=true)
+                                        nextURL=display_element, 
+                                        opacity=opacity, isJsPsych=true)
     }
 
     graph.build()

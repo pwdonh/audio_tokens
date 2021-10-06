@@ -21,12 +21,8 @@ class AudioGraph {
         this.submitResults = submitResults
     }
 
-    // const AudioContext = window.AudioContext || window.webkitAudioContext;
-    // this.audioCtx = new AudioContext();
-
-    this.width = width // document.getElementById(parentId).clientWidth
+    this.width = width
     this.height = this.width
-    // document.getElementById(parentId).height = this.width
     this.max_len = Math.sqrt(this.width**2*2)*.5
 
     this.h = this.width/2
@@ -73,10 +69,6 @@ class AudioGraph {
   }
 
   unblockAudio() {
-    // if (this.audioCtx.state === 'suspended') {
-    //     this.audioCtx.resume();
-    // }
-    // var audiofile_ids = JSON.parse(document.getElementById('audiofile-ids').innerHTML)
     var i, player
     for (i=0; i<this.nodes.length; i++) {
       player = document.getElementById('page-audio-'+this.nodes[i].id)
@@ -106,7 +98,7 @@ class AudioGraph {
       var x = (this.nodes[i].x-this.h)/this.r/2
       var y = (this.nodes[i].y-this.k)/this.r/2
       results.push({'id': this.nodes[i].id, 'audiofile': this.nodes[i].audiofile,
-                    'values': [x, y]})
+                    'values': [x, y], 'elapsed': this.nodes[i].elapsed})
     }
     this.submitResults({'type': 'circle', 'trial_id': this.trial_id,
                         'ratingtype': 'similarity', labels: '',
@@ -142,14 +134,14 @@ class AudioGraph {
       } else {
         document.getElementById(this.audioContainerId).innerHTML += '<audio id="'+player_id+'"></audio>'
         if (this.nodes[i].audiofile.length>0) {
-          console.log(this.nodes[i].audiofile)
           showPlaybackTools(this.nodes[i].audiofile, this.nodes[i].id)
         } else {
           requestAudio(this.nodes[i].id)
         }
       }
-      // tracks.push( this.audioCtx.createMediaElementSource(player) )
-      // tracks[i].connect(this.audioCtx.destination);
+      this.nodes[i].duration = 0.
+      this.nodes[i].elapsed = 0.
+      this.nodes[i].started = 0
     }
   }
 
@@ -287,10 +279,6 @@ class AudioGraph {
   }
 
   mouseover(self, circle, style, d, i) {
-    // check if context is in suspended state (autoplay policy)
-    // if (self.audioCtx.state === 'suspended') {
-    //     self.audioCtx.resume();
-    // }
     self.hovered = i
     self.d_next = d
     self.circle_next = circle
@@ -298,8 +286,10 @@ class AudioGraph {
       if (self.player) {
         self.player.pause()
       }
+      d.started = Date.now()
       self.player = document.getElementById("page-audio-"+circle.id)
       self.highlighted = i
+      d.duration = self.player.duration
       self.player.play()
       d3.select(circle)
        .attr("r", self.circle_size_2(self, d))
@@ -313,16 +303,15 @@ class AudioGraph {
 
   mouseout(self, circle, style, d) {
     if ((self.highlighted==self.hovered)&(!self.is_dragged)) {
+      d.elapsed += (Date.now()-d.started)/1000.
       self.edgeHide(self)
       self.player.pause()
-      self.player.currentTime = 0
+      // self.player.currentTime = 0
       self.highlighted = -1
       d3.select(circle)
-        // .attr("r", self.circle_size_1())
         .attr("r", self.circle_size_1(self, d))
         .style("stroke", style.border_color_1)
         .style("stroke-width", style.border_width_1)
-      // self.edgeHide()
     }
     self.hovered = -1
   }
@@ -350,8 +339,6 @@ class AudioGraph {
   }
 
   all_in(self) {
-
-     // var audiofile_ids = JSON.parse(document.getElementById('audiofile-ids').innerHTML)
      var is_done = true
      var i = 0
      while (is_done & (i<self.nodes.length)) {
@@ -365,15 +352,9 @@ class AudioGraph {
   }
 
   setupDrag() {
-
     var circles = this.circles
     var self = this
 
-    // circles.call(d3.drag()
-    //              .on("start", self.dragstarted)
-    //              .on("drag", self.dragged)
-    //              .on("end", self.dragended)
-    //              );
     circles.call(d3.drag()
                  .on("start", function(d) {
                    self.dragstarted(self, this, d, i)
@@ -385,7 +366,6 @@ class AudioGraph {
                    self.dragended(self, this, d, i)
                  })
                  );
-
   }
 
   dragstarted(self, circle, d, i) {
@@ -442,7 +422,6 @@ class AudioGraph {
   }
 
   edgeUpdate(self, d, i, x, y) {
-
     self.edges.each(function(l, li) {
       var stroke_params = self.getStroke(self, this, l, i)
       if (l.source == i) {
@@ -459,11 +438,6 @@ class AudioGraph {
   edgeShow(self, d, i, x, y) {
     self.edges.each(function(l, li) {
       var stroke_params = self.getStroke(self, this, l, i)
-      // if (l.source == i) {
-      //   d3.select(this).attr("x1", d.x = x).attr("y1", d.y = y);
-      // } else if (l.target == i) {
-      //   d3.select(this).attr("x2", d.x = x).attr("y2", d.y = y);
-      // }
       d3.select(this).attr("stroke", stroke_params[0])
       d3.select(this).attr("stroke-width", stroke_params[1])
     });
@@ -587,7 +561,9 @@ class CircleSortGraph extends AudioGraph {
     var results = []
     for (i=0; i<this.nodes.length; i++) {
       results.push({'id': this.nodes[i].id, 'audiofile': this.nodes[i].audiofile,
-                    'values': [this.clusterIndex[i]]})
+                    'values': [this.clusterIndex[i]], 
+                    'elapsed': this.nodes[i].elapsed,
+                    'duration': this.nodes[i].duration})
     }
     this.submitResults({'type': 'circlesort', 'trial_id': this.trial_id,
                         'ratingtype': 'cluster', 'labels': [''],
@@ -770,13 +746,11 @@ class TripletAudioGraph extends SquareAudioGraph {
           num_completed += 1
         }
       }
-      // self.nodes[i_node].completed = num_completed+1
       self.nodes[i_node].completed = Date.now()-self.time_0
       d3.selectAll(".node")
         .filter(function(d, i) {
             return d.id == circle.id;
         })
-        // .lower()
         .attr("cy", self.r)
         .attr("cx", num_completed-30)
 
@@ -801,7 +775,9 @@ class TripletAudioGraph extends SquareAudioGraph {
     var results = []
     for (i=0; i<nodes.length; i++) {
       results.push({'id': nodes[i].id, 'audiofile': this.nodes[i].audiofile,
-                    'values': [nodes[i].completed]})
+                    'values': [nodes[i].completed], 
+                    'elapsed': this.nodes[i].elapsed,
+                    'duration': this.nodes[i].duration})
     }
     this.submitResults({'type': 'triplet', 'trial_id': this.trial_id,
                         'ratingtype': 'triplet', 'labels': [''],
@@ -885,7 +861,9 @@ class FreesortGraph extends SquareAudioGraph {
       pos = closest(x,y,this.xpos,this.ypos,1e5)
       category = pos[0]+this.num_col*(pos[1])
       results.push({'id': this.nodes[i].id, 'audiofile': this.nodes[i].audiofile,
-                    'values': [category]})
+                    'values': [category], 
+                    'elapsed': this.nodes[i].elapsed,
+                    'duration': this.nodes[i].duration})
     }
     this.submitResults({'type': 'freesort', 'trial_id': this.trial_id,
                         'ratingtype': 'categories', 'labels': this.feature_labels,
@@ -1002,7 +980,9 @@ class FeatureRatings2D extends SquareAudioGraph {
       var x = (this.nodes[i].x-30)/this.r/2
       var y = (this.nodes[i].y-30)/this.r/2
       results.push({'id': this.nodes[i].id, 'audiofile': this.nodes[i].audiofile,
-                    'values': [x, y]})
+                    'values': [x, y], 
+                    'elapsed': this.nodes[i].elapsed,
+                    'duration': this.nodes[i].duration})
     }
     this.submitResults({'type': 'features2d', 'trial_id': this.trial_id,
                         'ratingtype': 'features2d', 'labels': this.feature_labels,
@@ -1086,7 +1066,9 @@ class FeatureRatings extends SquareAudioGraph {
     for (i=0; i<this.num_audio; i++) {
       results.push({'id': this.nodes[i*this.num_features].id,
                     'audiofile': this.nodes[i*this.num_features].audiofile,
-                    'values': []})
+                    'values': [], 
+                    'elapsed': this.nodes[i].elapsed,
+                    'duration': this.nodes[i].duration})
       for (j=0; j<this.num_features; j++) {
         var x = (this.nodes[i*this.num_features+j].x-this.h+this.r)/this.r/2
         results[i].values.push(x)
@@ -1664,12 +1646,16 @@ function submitResultsJsPsych(results, nextURL) {
   var trial_data = {
     stimuli: [],
     ratings: [],
+    elapsed: [],
+    duration: [],
     rt: results.time,
     ratingtype: results.ratingtype,
     labels: results.labels
   }
   for (var i=0; i<results.results.length; i++){
     trial_data.stimuli.push(results.results[i].audiofile)
+    trial_data.elapsed.push(results.results[i].elapsed)
+    trial_data.duration.push(results.results[i].duration)
     if (results.results[i].values.length==1){
       trial_data.ratings.push(results.results[i].values[0])
     } else {

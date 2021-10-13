@@ -3,8 +3,8 @@
     <head>
         <title>My experiment</title>
         <script src="js/jspsych.js"></script>
-        <script src="js/jspsych-audio-ratings.js"></script>
-        <script src="js/audio-ratings.js?v=4"></script>
+        <script src="js/jspsych-audio-tokens.js"></script>
+        <script src="js/audio-tokens.js"></script>
         <script src="//d3js.org/d3.v4.min.js"></script>
         <link href="css/jspsych.css" rel="stylesheet" type="text/css">
     </head>
@@ -25,7 +25,7 @@
                        'data/cven_17_17551_84473_512103.wav']
 
         var single_feature_trial = {
-            type: 'audio-ratings',
+            type: 'audio-tokens',
             ratingtype: 'features',
             stimuli: stimuli.slice(0,4),
             label: ['Feature 1'],
@@ -33,7 +33,7 @@
         }
 
         var multiple_feature_trial = {
-            type: 'audio-ratings',
+            type: 'audio-tokens',
             ratingtype: 'features',
             stimuli: stimuli.slice(0,4),
             label: ['Feature 1', 'Feature 2', 'Feature 3'],
@@ -43,7 +43,7 @@
         }
 
         var features2d_trial = {
-            type: 'audio-ratings',
+            type: 'audio-tokens',
             ratingtype: 'features2d',
             stimuli: stimuli,
             label: ['Feature 1', 'Feature 2'],
@@ -52,26 +52,26 @@
         }
 
         var categories_trial = {
-            type: 'audio-ratings',
+            type: 'audio-tokens',
             ratingtype: 'categories',
             stimuli: stimuli,
             label: ['Category 1', 'Category 2'],
         }
 
         var cluster_trial = {
-            type: 'audio-ratings',
+            type: 'audio-tokens',
             ratingtype: 'cluster',
             stimuli: stimuli,
         }
 
         var similarity_trial = {
-            type: 'audio-ratings',
+            type: 'audio-tokens',
             ratingtype: 'similarity',
             stimuli: stimuli,
         }
 
         var triplets_trial = {
-            type: 'audio-ratings',
+            type: 'audio-tokens',
             ratingtype: 'triplets',
             stimuli: stimuli
         }

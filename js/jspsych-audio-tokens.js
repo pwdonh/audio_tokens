@@ -2,12 +2,12 @@
  * Example plugin template
  */
 
-jsPsych.plugins["audio-ratings"] = (function() {
+jsPsych.plugins["audio-tokens"] = (function() {
 
   var plugin = {};
 
   plugin.info = {
-    name: "audio-ratings",
+    name: "audio-tokens",
     parameters: {
       stimuli: {
         type: jsPsych.plugins.parameterType.OBJECT,

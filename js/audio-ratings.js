@@ -100,8 +100,7 @@ class AudioGraph {
       var y = (this.nodes[i].y-this.k)/this.r/2
       results.push({'id': this.nodes[i].id, 'audiofile': this.nodes[i].audiofile,
                     'values': [x, y], 
-                    'elapsed': this.audios[i].elapsed,
-                    'duration': this.audios[i].duration})
+                    'elapsed': this.audios[i].elapsed/this.audios[i].duration})
     }
     this.submitResults({'type': 'circle', 'trial_id': this.trial_id,
                         'ratingtype': 'similarity', labels: '',
@@ -585,8 +584,7 @@ class CircleSortGraph extends AudioGraph {
     for (i=0; i<this.nodes.length; i++) {
       results.push({'id': this.nodes[i].id, 'audiofile': this.nodes[i].audiofile,
                     'values': [this.clusterIndex[i]], 
-                    'elapsed': this.audios[i].elapsed,
-                    'duration': this.audios[i].duration})
+                    'elapsed': this.audios[i].elapsed/this.audios[i].duration})
     }
     this.submitResults({'type': 'circlesort', 'trial_id': this.trial_id,
                         'ratingtype': 'cluster', 'labels': [''],
@@ -799,8 +797,7 @@ class TripletAudioGraph extends SquareAudioGraph {
     for (i=0; i<nodes.length; i++) {
       results.push({'id': nodes[i].id, 'audiofile': this.nodes[i].audiofile,
                     'values': [nodes[i].completed], 
-                    'elapsed': this.audios[i].elapsed,
-                    'duration': this.audios[i].duration})
+                    'elapsed': this.audios[i].elapsed/this.audios[i].duration})
     }
     this.submitResults({'type': 'triplet', 'trial_id': this.trial_id,
                         'ratingtype': 'triplet', 'labels': [''],
@@ -885,8 +882,7 @@ class FreesortGraph extends SquareAudioGraph {
       category = pos[0]+this.num_col*(pos[1])
       results.push({'id': this.nodes[i].id, 'audiofile': this.nodes[i].audiofile,
                     'values': [category], 
-                    'elapsed': this.audios[i].elapsed,
-                    'duration': this.audios[i].duration})
+                    'elapsed': this.audios[i].elapsed/this.audios[i].duration})
     }
     this.submitResults({'type': 'freesort', 'trial_id': this.trial_id,
                         'ratingtype': 'categories', 'labels': this.feature_labels,
@@ -1005,8 +1001,7 @@ class FeatureRatings2D extends SquareAudioGraph {
       var y = (this.nodes[i].y-30)/this.r/2
       results.push({'id': this.nodes[i].id, 'audiofile': this.nodes[i].audiofile,
                     'values': [x, y], 
-                    'elapsed': this.audios[i].elapsed,
-                    'duration': this.audios[i].duration})
+                    'elapsed': this.audios[i].elapsed/this.audios[i].duration})
     }
     this.submitResults({'type': 'features2d', 'trial_id': this.trial_id,
                         'ratingtype': 'features2d', 'labels': this.feature_labels,
@@ -1092,8 +1087,7 @@ class FeatureRatings extends SquareAudioGraph {
       results.push({'id': this.nodes[i*this.num_features].id,
                     'audiofile': this.nodes[i*this.num_features].audiofile,
                     'values': [], 
-                    'elapsed': this.audios[i].elapsed,
-                    'duration': this.audios[i].duration})
+                    'elapsed': this.audios[i].elapsed/this.audios[i].duration})
       for (j=0; j<this.num_features; j++) {
         var x = (this.nodes[i*this.num_features+j].x-this.h+this.r)/this.r/2
         results[i].values.push(x)
@@ -1672,7 +1666,6 @@ function submitResultsJsPsych(results, nextURL) {
     stimuli: [],
     ratings: [],
     elapsed: [],
-    duration: [],
     rt: results.time,
     ratingtype: results.ratingtype,
     labels: results.labels
@@ -1680,7 +1673,6 @@ function submitResultsJsPsych(results, nextURL) {
   for (var i=0; i<results.results.length; i++){
     trial_data.stimuli.push(results.results[i].audiofile)
     trial_data.elapsed.push(results.results[i].elapsed)
-    trial_data.duration.push(results.results[i].duration)
     if (results.results[i].values.length==1){
       trial_data.ratings.push(results.results[i].values[0])
     } else {

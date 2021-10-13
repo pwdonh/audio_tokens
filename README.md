@@ -2,6 +2,22 @@
 
 This is a Javascript toolbox to perform online rating studies with auditory material. The main feature of the toolbox is that audio samples are associated with visual tokens on the screen that control audio playback and can be manipulated depending on the type of rating. This allows the collection of single- and multi-dimensional feature ratings, as well as categorical and similarity ratings. The toolbox can be used via a plugin for the widely-used [jsPsych](https://www.jspsych.org), as well as using plain Javascript for custom applications.
 
+## Screenshots
+
+### Single feature rating
+
+<img src="./imgs/figure_one_feature.png" alt="drawing" width="300"/>
+
+### Multiple feature rating
+
+<img src="./imgs/figure_three_features.png" alt="drawing" width="300"/>
+
+### Sorting
+
+<img src="./imgs/figure_cluster.png" alt="drawing" width="300"/>
+
+### And more..
+
 You can try the tools interactively in this [blog post](https://peterdonhauser.com/post/audio-ratings/) or read our [preprint](https://psyarxiv.com).
 
 ## Example script for jsPsych plugin

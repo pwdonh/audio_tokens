@@ -49,6 +49,7 @@ Here we are first importing a few libraries:
 -	`jspsych.js`: This provides all the basic functionality of jsPsych
 -	`jspsych-audio-tokens.js`: This is the plugin that allows us to include the rating tools in a jsPsych experiment
 -	More jsPsych plugins can be loaded here in order to build your experiment, e.g. to display instructions
+
 There is nothing written in between the `<body></body>` tags. This is normally where the content of a web page goes: here jsPsych takes care of displaying content according to the trial structure of the experiment.
 In between the `<script></script>` tags we will add all the jsPsych code:
 
@@ -61,7 +62,8 @@ var single_feature_trial = {
               'data/speaker3.wav',
               'data/speaker4.wav'],
     label: ['Feature 1'],
-    anchors: [['low', '', 'high']]
+    anchors: [['low', '', 'high']],
+    force_listen: false
 }
 
 jsPsych.init({
@@ -73,11 +75,13 @@ jsPsych.init({
 ```
 
 Here, `single_feature_trial` is the variable holding the parameters for a jsPsych trial:
--	`type`: here we tell jsPsych to display a trial using our plugin called `audio-tokens`
+-	`type`: Here we tell jsPsych to display a trial using our plugin called `audio-tokens`
 -	`ratingtype`: This tells our plugin what rating type to use among the ones described in this paper. Options are: `features`, `features2d`, `categories`, `cluster`, `similarity`, `triplets`
--	`stimuli`: this is an array containing the file paths of the audio stimuli for this trial relative to the directory where the html file is stored.
--	`label`: this specifies the label to be displayed for a given rating dimension (e.g. valence, arousal, accentedness). See Fig. 1, the label on top of the arena.
--	`anchors`: this specifies the labels displayed as the endpoints of the rating dimensions (e.g. low-high, positive-neutral-negative)
+-	`stimuli`: This is an array containing the file paths of the audio stimuli for this trial relative to the directory where the html file is stored.
+-	`label`: This specifies the label to be displayed for a given rating dimension (e.g. valence, arousal, accentedness). See Fig. 1, the label on top of the arena.
+-	`anchors`: This specifies the labels displayed as the endpoints of the rating dimensions (e.g. low-high, positive-neutral-negative)
+-	`force_listen`: This, if set to `true`, checks whether the participant has listened to the whole audio file before allowing them to submit their ratings.
+
 Then the call to `jsPsych.init` starts the experiment. In this case, the experiment timeline includes only one trial and the recorded data will be presented on the screen after the experiment is finished. The data is by default formatted in json, and for the example trial looks like the following:
 
 ```

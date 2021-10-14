@@ -246,7 +246,6 @@ class AudioGraph {
 
   draw_nodes(self, svg) {
     var colorpalette = self.get_colorpalette(self)
-    console.log(self.opacity)
     var circles = svg.selectAll("node")
                      .data(self.nodes).enter()
                      .append("circle")
@@ -367,7 +366,7 @@ class AudioGraph {
        var circle = document.getElementById(String(self.nodes[i].id))
        var x = circle.cx.animVal.value
        var y = circle.cy.animVal.value
-       is_done = self.is_in(self, x, y)
+       is_done = (self.is_in(self, x, y))
        i++
      }
      return is_done
@@ -726,7 +725,7 @@ class TripletAudioGraph extends SquareAudioGraph {
     d3.select('#'+this.parentID+'-drop-box').raise()
 
     d3.selectAll(".node")
-      .attr('opacity', 0.)
+      .style("opacity", 0.)
       .raise()
 
     d3.selectAll(".node")
@@ -734,7 +733,7 @@ class TripletAudioGraph extends SquareAudioGraph {
           return i < 3;
       })
       .raise()
-      .attr('opacity', 1.)
+      .style('opacity', this.opacity)
 
   }
 
@@ -784,7 +783,7 @@ class TripletAudioGraph extends SquareAudioGraph {
           .transition().duration(200)
           .attr("cx", cx)
           .attr("cy", cy)
-          .attr("opacity", 1.)
+          .style("opacity", self.opacity)
       } else if ((self.nodes.length-num_completed)==3) {
         self.submitFcn(self.nodes)
       }

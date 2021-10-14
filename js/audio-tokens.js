@@ -330,6 +330,9 @@ class AudioGraph {
         .style("opacity", opacity)
     }
     self.hovered = -1
+    if (self.all_in(self)) {
+      self.readyFcn()
+    }    
   }
 
   boundary(self,x,y,i) {
@@ -366,7 +369,11 @@ class AudioGraph {
        var circle = document.getElementById(String(self.nodes[i].id))
        var x = circle.cx.animVal.value
        var y = circle.cy.animVal.value
-       is_done = (self.is_in(self, x, y))
+       if (self.opacity<1.) {
+         is_done = (self.is_in(self, x, y))&(is_listened)
+       } else {
+         is_done = self.is_in(self, x, y)
+       }
        i++
      }
      return is_done

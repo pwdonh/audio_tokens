@@ -32,13 +32,21 @@ jsPsych.plugins["audio-tokens"] = (function() {
         // [['low', 'medium', 'high'],
         //  ['low', 'medium', 'high'],
         //  ['low', 'medium', 'high']]
+      },
+      force_listen: {
+        type: jsPsych.plugins.parameterType.BOOL,
+        default: false
       }
     }
   }
 
   plugin.trial = function(display_element, trial) {
 
-    var opacity = 1.
+    if (trial.force_listen) {
+      var opacity = .5
+    } else {
+      var opacity = 1.
+    }
     var height = {'features': 150*trial.label.length,
                   'cluster': 400,
                   'similarity': 400,

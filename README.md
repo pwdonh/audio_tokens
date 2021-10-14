@@ -22,7 +22,7 @@ You can try the tools interactively in this [blog post](https://peterdonhauser.c
 
 ## Example script for jsPsych plugin
 
-We go through the basic steps of setting up an experiment here. The complete experiment can be written in one html-file and will look like [this](https://pwdonh.github.io/audio_ratings/index_query.html?type=single_feature). This is the minimal page setup, excluding the jsPsych code:
+We go through the basic steps of setting up an experiment here. The complete experiment can be written in one html-file and will look like [this](https://pwdonh.github.io/audio_tokens/index_query.html?type=single_feature). This is the minimal page setup, excluding the jsPsych code:
 
 ```
 <!DOCTYPE html>

@@ -18,7 +18,9 @@ This is a Javascript toolbox to perform online rating studies with auditory mate
 
 ### And more..
 
-You can try the tools interactively in this [blog post](https://peterdonhauser.com/post/audio-ratings/) or read our [preprint](https://psyarxiv.com).
+You can try the tools interactively in this [blog post](https://peterdonhauser.com/post/audio-ratings/) or read our preprint:
+
+Donhauser, Peter, and Denise Klein. 2021. “Audio-tokens: A Toolbox for Rating, Sorting and Comparing Audio Samples in the Browser.” PsyArXiv. October 16. https://doi.org/10.31234/osf.io/3j58q
 
 ## Example script for jsPsych plugin
 

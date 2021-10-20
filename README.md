@@ -57,7 +57,7 @@ In between the `<script></script>` tags we will add all the jsPsych code:
 
 ```
 var single_feature_trial = {
-    type: 'audio-tokens,
+    type: 'audio-tokens',
     ratingtype: 'features',
     stimuli: ['data/speaker1.wav',
               'data/speaker2.wav',

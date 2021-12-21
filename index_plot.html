@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>My experiment</title>
+        <script src="js/audio-tokens.js"></script>
+        <!-- <script src="https://unpkg.com/d3-3d/build/d3-3d.min.js"></script> -->
+        <script src="//d3js.org/d3.v4.min.js"></script>
+        <link href="css/jspsych.css" rel="stylesheet" type="text/css">   
+    </head>
+    <body>
+    </body>
+    <script>
+
+        // Array with stimulus file paths
+        var stimuli = [
+            'data/cven_00_02286_84473_617520.wav',
+            'data/cven_03_26059_84473_17388318.wav',
+            'data/cven_05_14026_84473_17255724.wav',
+            'data/cven_06_31405_84473_97708.wav',
+            'data/cven_07_27838_84473_566483.wav',
+            'data/cven_08_19497_84473_17246733.wav',
+            'data/cven_09_26764_84473_17637624.wav',
+            'data/cven_10_19680_84473_665433.wav',
+            'data/cven_17_17551_84473_512103.wav'
+        ]
+        var colors = ["#0072B2", "#D55E00"]
+
+        var num_stimuli = stimuli.length
+        data = {'nodes': []}
+        for (i=0; i<num_stimuli; i++) {
+            // Select random position, circle size and color
+            data.nodes.push({'id': 'item-'+String(i), 'audiofile': stimuli[i],
+                            'values': [
+                                (Math.random()-.5)*2, (Math.random()-.5)*2,
+                                ],
+                            'circle_size': Math.random()/2+.5, 
+                            'color': colors[Math.floor(Math.random()*2)]})
+        }        
+
+        var html = ''
+        html += '<div class="container" style="margin-bottom:25px">'
+        html += '<div class="d-flex justify-content-center">'
+        html += '<div id="button-container" class="btn-group" style="margin-bottom:25px">'
+        html += '</div>'
+        html += '</div>'
+        html += '</div>'
+        html += '<div class="container" style="margin-bottom:25px">'
+        html += '<div class="d-flex justify-content-center">'
+        html += '<div id="plot-speakers-div">'
+        html += '<svg id="plot-speakers" width="400" height="400">'
+        html += '</div>'
+        html += '</div>'
+        html += '<div id="audio-container"></div>'        
+        document.body.innerHTML += html
+
+        var graph = new AudioGraphStatic(
+            data, 'plot-speakers', 'audio-container', buttonContainerId='button-container', draw_edges=false,
+            trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false)
+        
+        graph.build()
+
+    </script>
+</html>

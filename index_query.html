@@ -104,8 +104,11 @@
         var ratingtype = url.searchParams.get('type')
         var trial = trials_all[ratingtype]
         if (url.searchParams.get('force_listen')) {
-            trial.force_listen = url.searchParams.get('force_listen')
+            trial.force_listen = url.searchParams.get('force_listen')=='true'
         }
+        if (url.searchParams.get('loop')) {
+            trial.loop = url.searchParams.get('loop')=='true'
+        }        
         var show_progress = false
 
         jsPsych.init({

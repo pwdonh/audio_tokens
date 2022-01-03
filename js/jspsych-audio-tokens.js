@@ -36,7 +36,11 @@ jsPsych.plugins["audio-tokens"] = (function() {
       force_listen: {
         type: jsPsych.plugins.parameterType.BOOL,
         default: false
-      }
+      },
+      loop: {
+        type: jsPsych.plugins.parameterType.BOOL,
+        default: true
+      }      
     }
   }
 
@@ -84,13 +88,13 @@ jsPsych.plugins["audio-tokens"] = (function() {
                                       buttonContainerId='button-container',
                                       draw_edges=true, trial_id='', width=400,
                                       nextURL=display_element, 
-                                      opacity=opacity, isJsPsych=true)
+                                      opacity=opacity, isJsPsych=true, loop=trial.loop)
     } else if (trial.ratingtype=='similarity') {
       var graph = new AudioGraph(data, 'plot-speakers', 'audio-container',
                                    buttonContainerId='button-container',
                                    draw_edges=true, trial_id='', width=400,
                                    nextURL=display_element, 
-                                   opacity=opacity, isJsPsych=true)
+                                   opacity=opacity, isJsPsych=true, loop=trial.loop)
     } else if (trial.ratingtype=='features') {
       var graph = new FeatureRatings(data, 'plot-speakers', 'audio-container',
                                      buttonContainerId='button-container',
@@ -100,7 +104,7 @@ jsPsych.plugins["audio-tokens"] = (function() {
                                      feature_anchors=trial.anchors,
                                      item_spacing=7.5, trial_id='', width=400,
                                      nextURL=display_element, 
-                                     opacity=opacity, isJsPsych=true)
+                                     opacity=opacity, isJsPsych=true, loop=trial.loop)
     } else if (trial.ratingtype=='features2d') {
       var graph = new FeatureRatings2D(data, 'plot-speakers', 'audio-container',
                                        buttonContainerId='button-container',
@@ -109,13 +113,13 @@ jsPsych.plugins["audio-tokens"] = (function() {
                                        feature_anchors=trial.anchors,
                                        trial_id='', width=400,
                                        nextURL=display_element, 
-                                       opacity=opacity, isJsPsych=true)
+                                       opacity=opacity, isJsPsych=true, loop=trial.loop)
     } else if (trial.ratingtype=='categories') {
       var graph = new FreesortGraph(data, 'plot-speakers', 'audio-container',
                                     buttonContainerId='button-container',
                                     draw_edges=false, trial_id='', width=400,
                                     nextURL=display_element, 
-                                    opacity=opacity, isJsPsych=true,
+                                    opacity=opacity, isJsPsych=true, loop=trial.loop,
                                     num_col=trial.label.length,
                                     item_spacing=12.5,
                                     feature_labels=trial.label)
@@ -124,7 +128,7 @@ jsPsych.plugins["audio-tokens"] = (function() {
                                         buttonContainerId='button-container',
                                         draw_edges=true, trial_id='', width=400,
                                         nextURL=display_element, 
-                                        opacity=opacity, isJsPsych=true)
+                                        opacity=opacity, isJsPsych=true, loop=trial.loop)
     }
 
     graph.build()

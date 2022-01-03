@@ -2,7 +2,7 @@ class AudioGraph {
 
   constructor(data, parentId, audioContainerId, buttonContainerId='',
               draw_edges=true, trial_id='', width=400, nextURL='',
-              opacity=1., isJsPsych=false) {
+              opacity=1., isJsPsych=false, loop=true) {
 
     this.num_items = data.nodes.length;
     this.nodes = data.nodes
@@ -13,6 +13,7 @@ class AudioGraph {
     this.trial_id = trial_id
     this.opacity = opacity
     this.nextURL = nextURL
+    this.loop = loop
     if (isJsPsych) {
         this.buttonClass = "jspsych-btn"
         this.submitResults = submitResultsJsPsych
@@ -137,7 +138,7 @@ class AudioGraph {
         this.audios.push({duration: 0., elapsed: 0., started: 0.})
         document.getElementById(this.audioContainerId).innerHTML += '<audio id="'+player_id+'"></audio>'
         if (this.nodes[i].audiofile.length>0) {
-          showPlaybackTools(this.nodes[i].audiofile, this.nodes[i].id)
+          showPlaybackTools(this.nodes[i].audiofile, this.nodes[i].id, this.loop)
         } else {
           requestAudio(this.nodes[i].id)
         }
@@ -489,9 +490,9 @@ class CircleSortGraph extends AudioGraph {
 
   constructor(data, parentId, audioContainerId, buttonContainerId='',
               draw_edges=true, trial_id='', width=400, nextURL='',
-              opacity=1., isJsPsych=false) {
+              opacity=1., isJsPsych=false, loop=true) {
     super(data, parentId, audioContainerId, buttonContainerId,
-          draw_edges, trial_id, width, nextURL, opacity=opacity, isJsPsych)
+          draw_edges, trial_id, width, nextURL, opacity=opacity, isJsPsych, loop)
     this.num_in = 0
     this.num_clusters = 0
     this.last_cluster = 0
@@ -692,9 +693,9 @@ class TripletAudioGraph extends SquareAudioGraph {
 
   constructor(data, parentId, audioContainerId, buttonContainerId='',
               draw_edges=true, trial_id='', width=400, nextURL='',
-              opacity=1., isJsPsych=false) {
+              opacity=1., isJsPsych=false, loop=true) {
     super(data, parentId, audioContainerId, buttonContainerId,
-                draw_edges, trial_id, width, nextURL, opacity=opacity, isJsPsych)
+                draw_edges, trial_id, width, nextURL, opacity=opacity, isJsPsych, loop)
     this.height = this.r/3+60
   }
 
@@ -816,10 +817,10 @@ class TripletAudioGraph extends SquareAudioGraph {
 class FreesortGraph extends SquareAudioGraph {
 
   constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=false,
-              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false,
+              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false, loop=true,
               num_col=4, item_spacing=7.5, feature_labels=['']) {
     super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
-          trial_id, width, nextURL, opacity=opacity, isJsPsych)
+          trial_id, width, nextURL, opacity=opacity, isJsPsych, loop)
     this.r = this.width/2-30
     this.num_col = num_col
     this.box_width = (this.r*2-45-(num_col-1)*item_spacing)/num_col
@@ -913,9 +914,9 @@ class FeatureRatings2D extends SquareAudioGraph {
 
   constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=true,
               feature_labels=[''], feature_anchors=[['','','']],
-              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false) {
+              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false, loop=true) {
     super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
-          trial_id, width, nextURL, opacity=opacity, isJsPsych)
+          trial_id, width, nextURL, opacity=opacity, isJsPsych, loop)
     this.feature_labels = feature_labels
     this.feature_anchors = feature_anchors
     this.r = (this.r+30)*.8-30
@@ -1053,7 +1054,7 @@ class FeatureRatings extends SquareAudioGraph {
   constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=true,
               num_features=3, feature_labels=[''], feature_anchors=[['','','']],
               item_spacing=7.5, trial_id='', width=400, nextURL='',
-              opacity=1., isJsPsych=false) {
+              opacity=1., isJsPsych=false, loop=true) {
     var num_audio = data.nodes.length
     var nodescopy = []
     var i, j
@@ -1065,7 +1066,7 @@ class FeatureRatings extends SquareAudioGraph {
     }
     data.nodes = nodescopy
     super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
-          trial_id, width, nextURL, opacity=opacity, isJsPsych)
+          trial_id, width, nextURL, opacity=opacity, isJsPsych, loop)
     this.r = this.width/2-60
     this.feature_height = num_audio*item_spacing
     if (num_features>1) {
@@ -1215,9 +1216,9 @@ class FeatureRatingsStatic extends FeatureRatings {
 class AudioGraphStatic extends SquareAudioGraph {
 
   constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=false,
-              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false) {
+              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false, loop=true) {
     super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
-          trial_id, width, nextURL, opacity=opacity, isJsPsych)
+          trial_id, width, nextURL, opacity=opacity, isJsPsych, loop)
     this.opacity = .85
   }
 
@@ -1262,9 +1263,9 @@ class AudioGraphStatic extends SquareAudioGraph {
 class AudioGraphMultipleStatic extends AudioGraphStatic {
 
   constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=false,
-              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false) {
+              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false, loop=true) {
     super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
-          trial_id, width, nextURL, opacity=opacity, isJsPsych)
+          trial_id, width, nextURL, opacity=opacity, isJsPsych, loop)
 
     this.height = width/2
 
@@ -1333,9 +1334,9 @@ class AudioGraphMultipleStatic extends AudioGraphStatic {
 class AudioGraphStatic3d extends AudioGraphStatic {
 
   constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=false,
-              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false) {
+              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false, loop=true) {
     super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
-          trial_id, width, nextURL, opacity=opacity, isJsPsych)
+          trial_id, width, nextURL, opacity=opacity, isJsPsych, loop)
     var startAngle = Math.PI, scale = 1, key = function(d){ return d.id; }
     this.startAngle = startAngle
     this.xangle = startAngle
@@ -1550,7 +1551,7 @@ function computeLength(x1, x2, y1, y2) {
   return Math.sqrt((x1-x2)**2+(y1-y2)**2)
 }
 
-function showPlaybackTools(data, audiofile_id) {
+function showPlaybackTools(data, audiofile_id, loop) {
     // Audio Player
     let url;
     if (data instanceof Blob) {
@@ -1561,7 +1562,7 @@ function showPlaybackTools(data, audiofile_id) {
     }
     let player = document.getElementById("page-audio-"+audiofile_id)
     player.src = url;
-    player.loop = true
+    player.loop = loop; // True or False
 }
 
 function requestAudio(audiofile_id, url="") {
@@ -1580,7 +1581,7 @@ function requestAudio(audiofile_id, url="") {
       ),
       processData: false,
       success: function( data, textStatus, jQxhr ){
-          showPlaybackTools(data.audio.type+';'+data.audio.data, audiofile_id)
+          showPlaybackTools(data.audio.type+';'+data.audio.data, audiofile_id, true)
       },
       error: function( jqXhr, textStatus, errorThrown ){
           console.log( errorThrown );

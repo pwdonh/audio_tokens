@@ -40,7 +40,11 @@ jsPsych.plugins["audio-tokens"] = (function() {
       loop: {
         type: jsPsych.plugins.parameterType.BOOL,
         default: true
-      }      
+      },
+      draw_edges: {
+        type: jsPsych.plugins.parameterType.BOOL,
+        default: true
+      }            
     }
   }
 
@@ -86,19 +90,19 @@ jsPsych.plugins["audio-tokens"] = (function() {
     if (trial.ratingtype=='cluster') {
       var graph = new CircleSortGraph(data, 'plot-speakers', 'audio-container',
                                       buttonContainerId='button-container',
-                                      draw_edges=true, trial_id='', width=400,
+                                      draw_edges=trial.draw_edges, trial_id='', width=400,
                                       nextURL=display_element, 
                                       opacity=opacity, isJsPsych=true, loop=trial.loop)
     } else if (trial.ratingtype=='similarity') {
       var graph = new AudioGraph(data, 'plot-speakers', 'audio-container',
                                    buttonContainerId='button-container',
-                                   draw_edges=true, trial_id='', width=400,
+                                   draw_edges=trial.draw_edges, trial_id='', width=400,
                                    nextURL=display_element, 
                                    opacity=opacity, isJsPsych=true, loop=trial.loop)
     } else if (trial.ratingtype=='features') {
       var graph = new FeatureRatings(data, 'plot-speakers', 'audio-container',
                                      buttonContainerId='button-container',
-                                     draw_edges=true,
+                                     draw_edges=trial.draw_edges,
                                      num_features=trial.label.length,
                                      feature_labels=trial.label,
                                      feature_anchors=trial.anchors,
@@ -108,7 +112,7 @@ jsPsych.plugins["audio-tokens"] = (function() {
     } else if (trial.ratingtype=='features2d') {
       var graph = new FeatureRatings2D(data, 'plot-speakers', 'audio-container',
                                        buttonContainerId='button-container',
-                                       draw_edges=true,
+                                       draw_edges=trial.draw_edges,
                                        feature_labels=trial.label,
                                        feature_anchors=trial.anchors,
                                        trial_id='', width=400,

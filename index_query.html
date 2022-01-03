@@ -108,6 +108,9 @@
         }
         if (url.searchParams.get('loop')) {
             trial.loop = url.searchParams.get('loop')=='true'
+        }
+        if (url.searchParams.get('draw_edges')) {
+            trial.draw_edges = url.searchParams.get('draw_edges')=='true'
         }        
         var show_progress = false
 

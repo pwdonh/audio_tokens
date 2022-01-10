@@ -31,10 +31,10 @@ We go through the basic steps of setting up an experiment here. The complete exp
 <html>
     <head>
         <title>My experiment</title>
-        <script src="scripts/jspsych.js"></script>
-        <script src="scripts/jspsych-audio-tokens.js"></script>
+        <script src="js/jspsych.js"></script>
+        <script src="js/jspsych-audio-tokens.js"></script>
         <script src="//d3js.org/d3.v4.min.js"></script>
-        <script src="scripts/audio-tokens.js"></script>
+        <script src="js/audio-tokens.js"></script>
         <link href="jspsych.css" rel="stylesheet" type="text/css">
     </head>
     <body>

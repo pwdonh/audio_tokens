@@ -697,6 +697,10 @@ class TripletAudioGraph extends SquareAudioGraph {
     return 13
   }
 
+  readyFcn() {
+    // this.submit_btn.disabled = false
+  }
+
   layout() {
     super.layout()
     for (var i=0; i<3; i++) {

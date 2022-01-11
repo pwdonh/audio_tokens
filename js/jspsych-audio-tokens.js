@@ -50,11 +50,21 @@ jsPsych.plugins["audio-tokens"] = (function() {
 
   plugin.trial = function(display_element, trial) {
 
+    // Set defaults
     if (trial.force_listen) {
-      var opacity = .5
+      trial.opacity = .5
     } else {
-      var opacity = 1.
+      trial.opacity = 1.
     }
+    trial.width = 400
+    trial.trial_id = ''
+    trial.nextURL = display_element
+    if (trial.ratingtype=='categories') {
+      trial.item_spacing = 12.5
+    } else {
+      trial.item_spacing = 7.5
+    }
+
     var height = {'features': 150*trial.label.length,
                   'cluster': 400,
                   'similarity': 400,
@@ -62,8 +72,8 @@ jsPsych.plugins["audio-tokens"] = (function() {
                   'categories': 225,
                   'triplets': 150}
 
+    // Generate html string
     var html = ''
-
     html += '<div class="container" style="margin-bottom:25px">'
     html += '<div class="d-flex justify-content-center">'
     html += '<div id="button-container" class="btn-group" style="margin-bottom:25px">'
@@ -80,61 +90,51 @@ jsPsych.plugins["audio-tokens"] = (function() {
 
     display_element.innerHTML = html
 
+    // Generate data for graph
     var num_speakers = trial.stimuli.length
     data = {'nodes': []}
     for (i=0; i<num_speakers; i++) {
-      data.nodes.push({'id': 'item-'+String(i), 'audiofile': trial.stimuli[i],
-                       'x': [], 'y': []})
+      data.nodes.push({
+        'id': 'item-'+String(i), 
+        'audiofile': trial.stimuli[i],
+        'x': [], 'y': []
+      })
     }
 
+    // Generate graph
     if (trial.ratingtype=='cluster') {
-      var graph = new CircleSortGraph(data, 'plot-speakers', 'audio-container',
-                                      buttonContainerId='button-container',
-                                      draw_edges=trial.draw_edges, trial_id='', width=400,
-                                      nextURL=display_element, 
-                                      opacity=opacity, isJsPsych=true, loop=trial.loop)
+      var graph = new CircleSortGraph(
+        data, 'plot-speakers', 'audio-container', 'button-container',
+        isJsPsych=true, params=trial
+      )
     } else if (trial.ratingtype=='similarity') {
-      var graph = new AudioGraph(data, 'plot-speakers', 'audio-container',
-                                   buttonContainerId='button-container',
-                                   draw_edges=trial.draw_edges, trial_id='', width=400,
-                                   nextURL=display_element, 
-                                   opacity=opacity, isJsPsych=true, loop=trial.loop)
+      var graph = new AudioGraph(
+        data, 'plot-speakers', 'audio-container', 'button-container',
+        isJsPsych=true, params=trial
+      )
     } else if (trial.ratingtype=='features') {
-      var graph = new FeatureRatings(data, 'plot-speakers', 'audio-container',
-                                     buttonContainerId='button-container',
-                                     draw_edges=trial.draw_edges,
-                                     num_features=trial.label.length,
-                                     feature_labels=trial.label,
-                                     feature_anchors=trial.anchors,
-                                     item_spacing=7.5, trial_id='', width=400,
-                                     nextURL=display_element, 
-                                     opacity=opacity, isJsPsych=true, loop=trial.loop)
+      var graph = new FeatureRatings(
+        data, 'plot-speakers', 'audio-container', 'button-container',
+        isJsPsych=true, params=trial
+      )
     } else if (trial.ratingtype=='features2d') {
-      var graph = new FeatureRatings2D(data, 'plot-speakers', 'audio-container',
-                                       buttonContainerId='button-container',
-                                       draw_edges=trial.draw_edges,
-                                       feature_labels=trial.label,
-                                       feature_anchors=trial.anchors,
-                                       trial_id='', width=400,
-                                       nextURL=display_element, 
-                                       opacity=opacity, isJsPsych=true, loop=trial.loop)
+      var graph = new FeatureRatings2D(
+        data, 'plot-speakers', 'audio-container', 'button-container',
+        isJsPsych=true, params=trial
+      )
     } else if (trial.ratingtype=='categories') {
-      var graph = new FreesortGraph(data, 'plot-speakers', 'audio-container',
-                                    buttonContainerId='button-container',
-                                    draw_edges=false, trial_id='', width=400,
-                                    nextURL=display_element, 
-                                    opacity=opacity, isJsPsych=true, loop=trial.loop,
-                                    num_col=trial.label.length,
-                                    item_spacing=12.5,
-                                    feature_labels=trial.label)
+      var graph = new FreesortGraph(
+        data, 'plot-speakers', 'audio-container', 'button-container',
+        isJsPsych=true, params=trial
+      )
     } else if (trial.ratingtype=='triplets') {
-      var graph = new TripletAudioGraph(data, 'plot-speakers', 'audio-container',
-                                        buttonContainerId='button-container',
-                                        draw_edges=true, trial_id='', width=400,
-                                        nextURL=display_element, 
-                                        opacity=opacity, isJsPsych=true, loop=trial.loop)
+      var graph = new TripletAudioGraph(
+        data, 'plot-speakers', 'audio-container', 'button-container',
+        isJsPsych=true, params=trial
+      )
     }
 
+    // Show graph
     graph.build()
 
   };

@@ -64,6 +64,7 @@ jsPsych.plugins["audio-tokens"] = (function() {
     } else {
       trial.item_spacing = 7.5
     }
+    trial.jsPsych = jsPsych
 
     var height = {'features': 150*trial.label.length,
                   'cluster': 400,

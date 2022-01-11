@@ -15,7 +15,7 @@ class AudioGraph {
     this.loop = params.loop
     if (isJsPsych) {
         this.buttonClass = "jspsych-btn"
-        this.submitResults = submitResultsJsPsych
+        this.submitResults = submitResultsJsPsych.bind(params)
     } else {
         this.buttonClass = "btn btn-primary"
         this.submitResults = submitResults
@@ -95,7 +95,7 @@ class AudioGraph {
 
   submitFcn() {
     var results = []
-    for (i=0; i<this.nodes.length; i++) {
+    for (var i=0; i<this.nodes.length; i++) {
       var x = (this.nodes[i].x-this.h)/this.r/2
       var y = (this.nodes[i].y-this.k)/this.r/2
       results.push({'id': this.nodes[i].id, 'audiofile': this.nodes[i].audiofile,
@@ -128,7 +128,7 @@ class AudioGraph {
 
   setupAudio() {
     const tracks = []
-    var player_id, player
+    var player_id, player, i
     for (i=0; i<this.num_items; i++) {
       player_id = 'page-audio-'+this.nodes[i].id
       if (!!document.getElementById(player_id)) {
@@ -385,7 +385,7 @@ class AudioGraph {
 
     circles.call(d3.drag()
                  .on("start", function(d) {
-                   self.dragstarted(self, this, d, i)
+                   self.dragstarted(self, this, d)
                  })
                  .on("drag", function(d, i) {
                    self.dragged(self, this, d, i)
@@ -396,7 +396,7 @@ class AudioGraph {
                  );
   }
 
-  dragstarted(self, circle, d, i) {
+  dragstarted(self, circle, d) {
     d3.select(circle).raise().classed("active", true);
     self.is_dragged = true
   }
@@ -583,9 +583,8 @@ class CircleSortGraph extends AudioGraph {
   }
 
   submitFcn() {
-    var i, j, pos, category
     var results = []
-    for (i=0; i<this.nodes.length; i++) {
+    for (var i=0; i<this.nodes.length; i++) {
       results.push({'id': this.nodes[i].id, 'audiofile': this.nodes[i].audiofile,
                     'values': [this.clusterIndex[i]], 
                     'elapsed': this.audios[i].elapsed/this.audios[i].duration})
@@ -700,7 +699,7 @@ class TripletAudioGraph extends SquareAudioGraph {
 
   layout() {
     super.layout()
-    for (i=0; i<3; i++) {
+    for (var i=0; i<3; i++) {
       this.nodes[i].y = 30 + this.r/6
       this.nodes[i].x = 30 + this.r/2 + this.r/6 + this.r/3*i
       this.nodes[i].time = 0
@@ -761,7 +760,7 @@ class TripletAudioGraph extends SquareAudioGraph {
       var cx = circle.cx.animVal.value
       var cy = circle.cy.animVal.value
       var num_completed = 0
-      for (i=0; i<self.nodes.length; i++) {
+      for (var i=0; i<self.nodes.length; i++) {
         if (self.nodes[i].id==circle.id) {
           var i_node = i
         }
@@ -794,9 +793,8 @@ class TripletAudioGraph extends SquareAudioGraph {
   }
 
   submitFcn(nodes) {
-    var i, j, pos, category
     var results = []
-    for (i=0; i<nodes.length; i++) {
+    for (var i=0; i<nodes.length; i++) {
       results.push({'id': nodes[i].id, 'audiofile': this.nodes[i].audiofile,
                     'values': [nodes[i].completed], 
                     'elapsed': this.audios[i].elapsed/this.audios[i].duration})
@@ -844,7 +842,7 @@ class FreesortGraph extends SquareAudioGraph {
 
   startFcn() {
     super.startFcn()
-    this.row_btn.disabled = false
+    // this.row_btn.disabled = false
   }
 
   edgeUpdate(self, d, i, x, y) {
@@ -873,9 +871,8 @@ class FreesortGraph extends SquareAudioGraph {
   }
 
   submitFcn() {
-    var i, j, pos, category
     var results = []
-    for (i=0; i<this.nodes.length; i++) {
+    for (var i=0; i<this.nodes.length; i++) {
       var x = this.nodes[i].x
       var y = this.nodes[i].y
       pos = closest(x,y,this.xpos,this.ypos,1e5)
@@ -992,9 +989,8 @@ class FeatureRatings2D extends SquareAudioGraph {
   }
 
   submitFcn() {
-    var i, j, pos, category
     var results = []
-    for (i=0; i<this.nodes.length; i++) {
+    for (var i=0; i<this.nodes.length; i++) {
       var x = (this.nodes[i].x-30)/this.r/2
       var y = (this.nodes[i].y-30)/this.r/2
       results.push({'id': this.nodes[i].id, 'audiofile': this.nodes[i].audiofile,
@@ -1077,14 +1073,13 @@ class FeatureRatings extends SquareAudioGraph {
   }
 
   submitFcn() {
-    var i, j
     var results = []
-    for (i=0; i<this.num_audio; i++) {
+    for (var i=0; i<this.num_audio; i++) {
       results.push({'id': this.nodes[i*this.num_features].id,
                     'audiofile': this.nodes[i*this.num_features].audiofile,
                     'values': [], 
                     'elapsed': this.audios[i].elapsed/this.audios[i].duration})
-      for (j=0; j<this.num_features; j++) {
+      for (var j=0; j<this.num_features; j++) {
         var x = (this.nodes[i*this.num_features+j].x-this.h+this.r)/this.r/2
         results[i].values.push(x)
       }
@@ -1675,5 +1670,10 @@ function submitResultsJsPsych(results, nextURL) {
     }
   }
   nextURL.innerHTML = '';
-  jsPsych.finishTrial(trial_data);
+  var version = this.jsPsych.version()
+  if (parseInt(version.split('.')[0])>=7) {
+    this.jsPsych.finishTrial(trial_data);
+  } else {
+    jsPsych.finishTrial(trial_data);
+  }
 }

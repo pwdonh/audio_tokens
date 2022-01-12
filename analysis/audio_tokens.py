@@ -34,7 +34,6 @@ def audiotokens_to_long(df, row_indices):
     for row_index in row_indices:
 
         row = df.loc[row_index].copy()
-        row = parse_json_strings(row, ['stimuli', 'ratings', 'elapsed', 'labels'])
 
         if row['ratingtype']=='cluster':
             # Get number of unique clusters
@@ -77,7 +76,6 @@ def audiotokens_to_long(df, row_indices):
 
 def compute_similarity_matrix(row):
     assert(row['ratingtype']=='similarity')
-    row = parse_json_strings(row, ['stimuli', 'ratings', 'elapsed'])
     similarity = squareform(1-pdist(row['ratings']))
     df_sim = pd.DataFrame(
         index=row['stimuli'], columns=row['stimuli'], data=similarity
@@ -88,7 +86,6 @@ def parse_triplet_row(row):
     df_triplets = pd.DataFrame(dict(
         stim_0=[], stim_1=[], stim_2=[], selected=[], last_selected=[]
     ))
-    row = parse_json_strings(row, ['stimuli', 'ratings', 'elapsed'])
     selections = np.array(row['ratings'])
     selections[selections==None] = selections[selections!=None].max()+1
     stimuli = np.array(row['stimuli'])
@@ -118,13 +115,35 @@ def triplets_to_long(df, row_indices):
     df_triplets.index = np.arange(df_triplets.shape[0])
     return df_triplets
 
+def read_audio_tokens_csv(infile):
+    df = pd.read_csv(infile)
+    query_string = get_query_string(['features', 'features2d', 'categories', 'cluster'])
+    row_indices = df.query(query_string).index
+    for index in row_indices:
+        row = df.loc[index].copy()
+        df.loc[index] = parse_json_strings(row, ['stimuli', 'ratings', 'elapsed', 'labels'])
+    query_string = get_query_string(['similarity', 'triplet'])
+    row_indices = df.query(query_string).index
+    # import pdb; pdb.set_trace()
+    for index in row_indices:
+        row = df.loc[index].copy()
+        df.loc[index] = parse_json_strings(row, ['stimuli', 'ratings', 'elapsed'])
+    return df
+
+def read_audio_tokens_json(infile):
+    df = pd.read_json(infile)
+    return df
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--infile', type=str)
     args = parser.parse_args()    
 
-    df = pd.read_csv(args.infile)
+    if os.path.splitext(args.infile)[1]=='.csv':
+        df = read_audio_tokens_csv(args.infile)
+    else:
+        df = read_audio_tokens_json(args.infile)
     basepath = os.path.splitext(args.infile)[0]
 
     # Process the trials of type features, features2d, categories, cluster

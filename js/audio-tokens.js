@@ -879,8 +879,8 @@ class FreesortGraph extends SquareAudioGraph {
     for (var i=0; i<this.nodes.length; i++) {
       var x = this.nodes[i].x
       var y = this.nodes[i].y
-      pos = closest(x,y,this.xpos,this.ypos,1e5)
-      category = pos[0]+this.num_col*(pos[1])
+      var pos = closest(x,y,this.xpos,this.ypos,1e5)
+      var category = pos[0]+this.num_col*(pos[1])
       results.push({'id': this.nodes[i].id, 'audiofile': this.nodes[i].audiofile,
                     'values': [category], 
                     'elapsed': this.audios[i].elapsed/this.audios[i].duration})
@@ -1044,7 +1044,7 @@ class FeatureRatings extends SquareAudioGraph {
 
   constructor(data, parentId, audioContainerId, buttonContainerId, 
               isJsPsych, params) {
-    var num_features = trial.label.length
+    var num_features = params.label.length
     var num_audio = data.nodes.length
     var nodescopy = []
     var i, j
@@ -1063,8 +1063,8 @@ class FeatureRatings extends SquareAudioGraph {
     } else {
       this.ypos = [30+this.feature_height]
     }
-    this.feature_labels = trial.label
-    this.feature_anchors = trial.anchors
+    this.feature_labels = params.label
+    this.feature_anchors = params.anchors
     if (num_audio>1) {
       this.ympos = makeArray(-this.feature_height, this.feature_height, Math.floor(this.num_items/num_features))
     } else {

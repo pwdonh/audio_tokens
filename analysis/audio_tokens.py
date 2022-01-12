@@ -138,13 +138,14 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--infile', type=str)
+    parser.add_argument('--outfile', type=str)
     args = parser.parse_args()    
 
     if os.path.splitext(args.infile)[1]=='.csv':
         df = read_audio_tokens_csv(args.infile)
     else:
         df = read_audio_tokens_json(args.infile)
-    basepath = os.path.splitext(args.infile)[0]
+    basepath = os.path.splitext(args.outfile)[0]
 
     # Process the trials of type features, features2d, categories, cluster
     # Those are cast in a long format where each row corresponds to a stimulus

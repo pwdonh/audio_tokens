@@ -143,7 +143,7 @@ The following fields are specific to our plugin:
 -	`rt`: the time, in milliseconds, from starting the trial to submitting the ratings
 The fields `stimuli`, `ratingtype`, `labels` and `anchors` are equivalent to the parameters specified in the experiment script. The remaining fields are generic jsPsych outputs.
 
-jsPsych has the option to save the experiment results in json (as shown above) or csv format. However the results from an Audio-Tokens trial contain ratings for multiple stimuli. To simplify further analysis, we provide a python script that converts the data coming from jsPsych to a spreadsheet in "long format". The json-results as shown above will be converted to the following, where each row corresponds to one stimulus:
+jsPsych has the option to save the experiment results in json (as shown above) or csv format. However the results from an Audio-Tokens trial contain ratings for multiple stimuli. To simplify further analysis, we provide a python command-line tool that converts the data coming from jsPsych to a spreadsheet in "long format". The json-results as shown above will be converted to the following, where each row corresponds to one stimulus:
 
 |    | stimulus                              | rating               | label     | trial_index | ratingtype |
 |----|---------------------------------------|----------------------|-----------|-------------|------------|

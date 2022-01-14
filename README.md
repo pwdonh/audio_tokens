@@ -76,7 +76,8 @@ var single_feature_trial = {
               'data/speaker4.wav'],
     label: ['Feature 1'],
     anchors: [['low', '', 'high']],
-    force_listen: false
+    force_listen: false,
+    loop: true
 }
 
 var jsPsych = initJsPsych({
@@ -95,6 +96,7 @@ Here, `single_feature_trial` is the variable holding the parameters for a jsPsyc
 -	`label`: This specifies the label to be displayed for a given rating dimension (e.g. valence, arousal, accentedness). See Fig. 1, the label on top of the arena.
 -	`anchors`: This specifies the labels displayed as the endpoints of the rating dimensions (e.g. low-high, positive-neutral-negative)
 -	`force_listen`: This, if set to `true`, checks whether the participant has listened to the whole audio file before allowing them to submit their ratings.
+-	`loop`: if set to `true`, the audio file will be played in a loop, while hovering over a token
 
 The call to `initJsPsych` initializes jsPsych and `jsPsych.run` starts the experiment. 
 

@@ -100,7 +100,7 @@ Here, `single_feature_trial` is the variable holding the parameters for a jsPsyc
 
 The call to `initJsPsych` initializes jsPsych and `jsPsych.run` starts the experiment. 
 
-Please check the file [`index_jspsych7.html`](./index.html) for more examples.
+Please check the file [`index_jspsych7.html`](./index_jspsych7.html) for more examples.
 
 ## Results
 

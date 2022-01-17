@@ -4,7 +4,7 @@ This is a Javascript toolbox to perform online rating studies with auditory mate
 
 ## Citation
 
-	Donhauser, Peter, and Denise Klein. 2021. “Audio-tokens: A Toolbox for Rating, Sorting and Comparing Audio Samples in the Browser.” PsyArXiv. October 16. doi:[10.31234/osf.io/3j58q](https://doi.org/10.31234/osf.io/3j58q)
+Donhauser, Peter, and Denise Klein. 2021. “Audio-tokens: A Toolbox for Rating, Sorting and Comparing Audio Samples in the Browser.” PsyArXiv. October 16. doi: [10.31234/osf.io/3j58q](https://doi.org/10.31234/osf.io/3j58q)
 
 ## Contents
 

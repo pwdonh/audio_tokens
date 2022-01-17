@@ -2,7 +2,7 @@
 
 jsPsych has the option to save the experiment results in json (as shown above) or csv format. However the results from an Audio-Tokens trial contain ratings for multiple stimuli. To simplify further analysis, we provide a python command-line tool that converts the data coming from jsPsych to a spreadsheet in "long format".
 
-This requires a Python 3 to be installed along with the packages pandas, numpy and scipy.
+This requires Python 3 to be installed along with the packages pandas, numpy and scipy.
 
 In a terminal, navigate to the folder where you saved the `audio_tokens.py` file. You can call the script like this:
 

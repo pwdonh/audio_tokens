@@ -1,27 +1,28 @@
 class AudioGraph {
 
-  constructor(data, parentId, audioContainerId, buttonContainerId='',
-              draw_edges=true, trial_id='', width=400, nextURL='',
-              opacity=1., isJsPsych=false) {
+  constructor(data, parentId, audioContainerId, buttonContainerId, 
+              isJsPsych, params) {
 
     this.num_items = data.nodes.length;
     this.nodes = data.nodes
     this.parentId = parentId
     this.audioContainerId = audioContainerId
     this.buttonContainerId = buttonContainerId
-    this.draw_edges = draw_edges
-    this.trial_id = trial_id
-    this.opacity = opacity
-    this.nextURL = nextURL
+    this.draw_edges = params.draw_edges
+    this.trial_id = params.trial_id
+    this.opacity = params.opacity
+    this.nextURL = params.nextURL
+    this.loop = params.loop
+    this.mute_key = params.mute_key
     if (isJsPsych) {
         this.buttonClass = "jspsych-btn"
-        this.submitResults = submitResultsJsPsych
+        this.submitResults = submitResultsJsPsych.bind(params)
     } else {
         this.buttonClass = "btn btn-primary"
         this.submitResults = submitResults
     }
 
-    this.width = width
+    this.width = params.width
     this.height = this.width
     this.max_len = Math.sqrt(this.width**2*2)*.5
 
@@ -95,7 +96,7 @@ class AudioGraph {
 
   submitFcn() {
     var results = []
-    for (i=0; i<this.nodes.length; i++) {
+    for (var i=0; i<this.nodes.length; i++) {
       var x = (this.nodes[i].x-this.h)/this.r/2
       var y = (this.nodes[i].y-this.k)/this.r/2
       results.push({'id': this.nodes[i].id, 'audiofile': this.nodes[i].audiofile,
@@ -111,24 +112,47 @@ class AudioGraph {
   build() {
     if (this.buttonContainerId.length==0) {
       this.startFcn()
-    } else {
+    } else {   
       this.start_btn = document.createElement("BUTTON");
       this.start_btn.innerHTML = 'Start'
       this.start_btn.className += this.buttonClass
       this.start_btn.addEventListener("click", this.startFcn.bind(this))
-      document.getElementById(this.buttonContainerId).appendChild(this.start_btn)
+      
       this.submit_btn = document.createElement("BUTTON");
       this.submit_btn.innerHTML = 'Submit'
       this.submit_btn.className += this.buttonClass
       this.submit_btn.disabled = true
       this.submit_btn.addEventListener("click", this.submitFcn.bind(this))
+      
+      this.mute_icon = document.createElement("OBJECT");
+      this.mute_icon.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="25" height="25" viewBox="0 0 75 75"
+        stroke="#111" stroke-width="5">
+        <path d="m39,14-17,15H6V48H22l17,15z" fill="#111" stroke-linejoin="round"/>
+        <path d="m49,26 20,24m0-24-20,24" fill="none" stroke-linecap="round"/>
+        </svg>
+      `      
+      this.mute_icon.id = 'mute-icon'
+      this.mute_icon.style.visibility = 'hidden'
+
+      var spaceholder = document.createElement("OBJECT");
+      spaceholder.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="25" height="25" viewBox="0 0 75 75"
+        stroke="#111" stroke-width="5">
+        </svg>
+      `   
+      spaceholder.id = 'spaceholder'
+
+      document.getElementById(this.buttonContainerId).appendChild(spaceholder)
+      document.getElementById(this.buttonContainerId).appendChild(this.start_btn)
       document.getElementById(this.buttonContainerId).appendChild(this.submit_btn)
+      document.getElementById(this.buttonContainerId).appendChild(this.mute_icon)
     }
   }
 
   setupAudio() {
     const tracks = []
-    var player_id, player
+    var player_id, player, i
     for (i=0; i<this.num_items; i++) {
       player_id = 'page-audio-'+this.nodes[i].id
       if (!!document.getElementById(player_id)) {
@@ -137,7 +161,7 @@ class AudioGraph {
         this.audios.push({duration: 0., elapsed: 0., started: 0.})
         document.getElementById(this.audioContainerId).innerHTML += '<audio id="'+player_id+'"></audio>'
         if (this.nodes[i].audiofile.length>0) {
-          showPlaybackTools(this.nodes[i].audiofile, this.nodes[i].id)
+          showPlaybackTools(this.nodes[i].audiofile, this.nodes[i].id, this.loop)
         } else {
           requestAudio(this.nodes[i].id)
         }
@@ -282,13 +306,36 @@ class AudioGraph {
       self.mouseout(self, this, style, d)
     })
 
+    d3.select('body').on("keypress", function() {
+      for (var i=0; i<self.audios.length; i++) {
+      }    
+      if (d3.event.key==self.mute_key){
+        self.play = !self.play
+        if (self.play) {
+          self.mute_icon.style.visibility = 'hidden'
+        } else {
+          self.mute_icon.style.visibility = 'visible'
+        }
+        if (self.hovered>-1) {
+          var hovered = self.hovered
+          if (self.play) {
+            self.mouseover(self, self.circle_next, style, self.d_next, self.hovered)
+          } else {
+            self.play = true // for updating 'elapsed' variable
+            self.mouseout(self, self.circle_next, style, self.d_next)
+            self.play = false
+            self.hovered = hovered
+          }
+        }
+      }
+    })
   }
 
-  mouseover(self, circle, style, d, i) {
+  mouseover(self, circle, style, d, i) {    
     self.hovered = i
     self.d_next = d
     self.circle_next = circle
-    if ((self.highlighted==-1)&(!self.is_dragged)) {
+    if ((self.play)&(self.highlighted==-1)&(!self.is_dragged)) {
       if (self.player) {
         self.player.pause()
       }
@@ -309,7 +356,9 @@ class AudioGraph {
   mouseout(self, circle, style, d) {
     if ((self.highlighted==self.hovered)&(!self.is_dragged)) {
       var audio = self.audios[d.audioindex]
-      audio.elapsed += (Date.now()-audio.started)/1000.
+      if (self.play) {
+        audio.elapsed += (Date.now()-audio.started)/1000.
+      }
       // console.log(audio.elapsed)
       self.edgeHide(self)
       self.player.pause()
@@ -385,7 +434,7 @@ class AudioGraph {
 
     circles.call(d3.drag()
                  .on("start", function(d) {
-                   self.dragstarted(self, this, d, i)
+                   self.dragstarted(self, this, d)
                  })
                  .on("drag", function(d, i) {
                    self.dragged(self, this, d, i)
@@ -396,7 +445,7 @@ class AudioGraph {
                  );
   }
 
-  dragstarted(self, circle, d, i) {
+  dragstarted(self, circle, d) {
     d3.select(circle).raise().classed("active", true);
     self.is_dragged = true
   }
@@ -487,11 +536,9 @@ class AudioGraph {
 
 class CircleSortGraph extends AudioGraph {
 
-  constructor(data, parentId, audioContainerId, buttonContainerId='',
-              draw_edges=true, trial_id='', width=400, nextURL='',
-              opacity=1., isJsPsych=false) {
-    super(data, parentId, audioContainerId, buttonContainerId,
-          draw_edges, trial_id, width, nextURL, opacity=opacity, isJsPsych)
+  constructor(data, parentId, audioContainerId, buttonContainerId,
+              isJsPsych, params) {
+    super(data, parentId, audioContainerId, buttonContainerId, isJsPsych, params)
     this.num_in = 0
     this.num_clusters = 0
     this.last_cluster = 0
@@ -585,9 +632,8 @@ class CircleSortGraph extends AudioGraph {
   }
 
   submitFcn() {
-    var i, j, pos, category
     var results = []
-    for (i=0; i<this.nodes.length; i++) {
+    for (var i=0; i<this.nodes.length; i++) {
       results.push({'id': this.nodes[i].id, 'audiofile': this.nodes[i].audiofile,
                     'values': [this.clusterIndex[i]], 
                     'elapsed': this.audios[i].elapsed/this.audios[i].duration})
@@ -690,11 +736,9 @@ class TripletStaticAudioGraph extends SquareAudioGraph {
 
 class TripletAudioGraph extends SquareAudioGraph {
 
-  constructor(data, parentId, audioContainerId, buttonContainerId='',
-              draw_edges=true, trial_id='', width=400, nextURL='',
-              opacity=1., isJsPsych=false) {
-    super(data, parentId, audioContainerId, buttonContainerId,
-                draw_edges, trial_id, width, nextURL, opacity=opacity, isJsPsych)
+  constructor(data, parentId, audioContainerId, buttonContainerId,
+              isJsPsych, params) {
+    super(data, parentId, audioContainerId, buttonContainerId, isJsPsych, params)
     this.height = this.r/3+60
   }
 
@@ -702,9 +746,13 @@ class TripletAudioGraph extends SquareAudioGraph {
     return 13
   }
 
+  readyFcn() {
+    // this.submit_btn.disabled = false
+  }
+
   layout() {
     super.layout()
-    for (i=0; i<3; i++) {
+    for (var i=0; i<3; i++) {
       this.nodes[i].y = 30 + this.r/6
       this.nodes[i].x = 30 + this.r/2 + this.r/6 + this.r/3*i
       this.nodes[i].time = 0
@@ -757,6 +805,22 @@ class TripletAudioGraph extends SquareAudioGraph {
                         .style("fill", "none")
   }
 
+  mouseover(self, circle, style, d, i) {
+    var x = parseFloat(circle.cx.animVal.value)
+    var y = parseFloat(circle.cy.animVal.value)
+    if (self.is_in(self, x, y)) {
+      super.mouseover(self, circle, style, d, i)
+    }
+  }  
+
+  mouseout(self, circle, style, d) {
+    var x = parseFloat(circle.cx.animVal.value)
+    var y = parseFloat(circle.cy.animVal.value)    
+    if (self.is_in(self, x, y)) {
+      super.mouseout(self, circle, style, d)
+    }
+  }    
+
   setupDrag() {
     var circles = this.svg.selectAll('circle')
     self = this
@@ -764,43 +828,44 @@ class TripletAudioGraph extends SquareAudioGraph {
       var circle = this
       var cx = circle.cx.animVal.value
       var cy = circle.cy.animVal.value
-      var num_completed = 0
-      for (i=0; i<self.nodes.length; i++) {
-        if (self.nodes[i].id==circle.id) {
-          var i_node = i
+      if (self.is_in(self, parseFloat(cx), parseFloat(cy))) {      
+        var num_completed = 0
+        for (var i=0; i<self.nodes.length; i++) {
+          if (self.nodes[i].id==circle.id) {
+            var i_node = i
+          }
+          if (self.nodes[i].completed>0) {
+            num_completed += 1
+          }
         }
-        if (self.nodes[i].completed>0) {
-          num_completed += 1
-        }
-      }
-      self.nodes[i_node].completed = Date.now()-self.time_0
-      d3.selectAll(".node")
-        .filter(function(d, i) {
-            return d.id == circle.id;
-        })
-        .attr("cy", self.r)
-        .attr("cx", num_completed-30)
-
-      if ((self.nodes.length-num_completed)>3) {
+        self.nodes[i_node].completed = Date.now()-self.time_0
         d3.selectAll(".node")
           .filter(function(d, i) {
-              return i == 0;
+              return d.id == circle.id;
           })
-          .raise()
-          .transition().duration(200)
-          .attr("cx", cx)
-          .attr("cy", cy)
-          .style("opacity", self.opacity)
-      } else if ((self.nodes.length-num_completed)==3) {
-        self.submitFcn(self.nodes)
+          .attr("cy", self.r)
+          .attr("cx", num_completed-30)
+
+        if ((self.nodes.length-num_completed)>3) {
+          d3.selectAll(".node")
+            .filter(function(d, i) {
+                return i == 0;
+            })
+            .raise()
+            .transition().duration(200)
+            .attr("cx", cx)
+            .attr("cy", cy)
+            .style("opacity", self.opacity)
+        } else if ((self.nodes.length-num_completed)==3) {
+          self.submitFcn(self.nodes)
+        }
       }
     })
   }
 
   submitFcn(nodes) {
-    var i, j, pos, category
     var results = []
-    for (i=0; i<nodes.length; i++) {
+    for (var i=0; i<nodes.length; i++) {
       results.push({'id': nodes[i].id, 'audiofile': this.nodes[i].audiofile,
                     'values': [nodes[i].completed], 
                     'elapsed': this.audios[i].elapsed/this.audios[i].duration})
@@ -815,19 +880,17 @@ class TripletAudioGraph extends SquareAudioGraph {
 
 class FreesortGraph extends SquareAudioGraph {
 
-  constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=false,
-              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false,
-              num_col=4, item_spacing=7.5, feature_labels=['']) {
-    super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
-          trial_id, width, nextURL, opacity=opacity, isJsPsych)
+  constructor(data, parentId, audioContainerId, buttonContainerId,
+              isJsPsych, params) {
+    super(data, parentId, audioContainerId, buttonContainerId, isJsPsych, params)
     this.r = this.width/2-30
-    this.num_col = num_col
-    this.box_width = (this.r*2-45-(num_col-1)*item_spacing)/num_col
+    this.num_col = params.label.length
+    this.box_width = (this.r*2-45-(this.num_col-1)*params.item_spacing)/this.num_col
     this.box_height = this.box_width
-    this.ypos = makeArray(30+this.box_width/2,this.r*2-this.box_width/2+30,num_col)
+    this.ypos = makeArray(30+this.box_width/2,this.r*2-this.box_width/2+30,this.num_col)
     this.ypos_show = [this.ypos[0]]
-    this.xpos = makeArray(30+this.box_width/2,this.r*2-this.box_width/2+30,num_col)
-    this.feature_labels = feature_labels
+    this.xpos = makeArray(30+this.box_width/2,this.r*2-this.box_width/2+30,this.num_col)
+    this.feature_labels = params.label
   }
 
   // addRow() {
@@ -850,7 +913,7 @@ class FreesortGraph extends SquareAudioGraph {
 
   startFcn() {
     super.startFcn()
-    this.row_btn.disabled = false
+    // this.row_btn.disabled = false
   }
 
   edgeUpdate(self, d, i, x, y) {
@@ -879,13 +942,12 @@ class FreesortGraph extends SquareAudioGraph {
   }
 
   submitFcn() {
-    var i, j, pos, category
     var results = []
-    for (i=0; i<this.nodes.length; i++) {
+    for (var i=0; i<this.nodes.length; i++) {
       var x = this.nodes[i].x
       var y = this.nodes[i].y
-      pos = closest(x,y,this.xpos,this.ypos,1e5)
-      category = pos[0]+this.num_col*(pos[1])
+      var pos = closest(x,y,this.xpos,this.ypos,1e5)
+      var category = pos[0]+this.num_col*(pos[1])
       results.push({'id': this.nodes[i].id, 'audiofile': this.nodes[i].audiofile,
                     'values': [category], 
                     'elapsed': this.audios[i].elapsed/this.audios[i].duration})
@@ -911,13 +973,11 @@ class FreesortGraph extends SquareAudioGraph {
 
 class FeatureRatings2D extends SquareAudioGraph {
 
-  constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=true,
-              feature_labels=[''], feature_anchors=[['','','']],
-              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false) {
-    super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
-          trial_id, width, nextURL, opacity=opacity, isJsPsych)
-    this.feature_labels = feature_labels
-    this.feature_anchors = feature_anchors
+  constructor(data, parentId, audioContainerId, buttonContainerId,
+              isJsPsych, params) {
+    super(data, parentId, audioContainerId, buttonContainerId, isJsPsych, params)
+    this.feature_labels = params.label
+    this.feature_anchors = params.anchors
     this.r = (this.r+30)*.8-30
     this.h = this.h*.8
     this.k = this.k*.8
@@ -1000,9 +1060,8 @@ class FeatureRatings2D extends SquareAudioGraph {
   }
 
   submitFcn() {
-    var i, j, pos, category
     var results = []
-    for (i=0; i<this.nodes.length; i++) {
+    for (var i=0; i<this.nodes.length; i++) {
       var x = (this.nodes[i].x-30)/this.r/2
       var y = (this.nodes[i].y-30)/this.r/2
       results.push({'id': this.nodes[i].id, 'audiofile': this.nodes[i].audiofile,
@@ -1050,10 +1109,9 @@ class FeatureRatings2D extends SquareAudioGraph {
 
 class FeatureRatings extends SquareAudioGraph {
 
-  constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=true,
-              num_features=3, feature_labels=[''], feature_anchors=[['','','']],
-              item_spacing=7.5, trial_id='', width=400, nextURL='',
-              opacity=1., isJsPsych=false) {
+  constructor(data, parentId, audioContainerId, buttonContainerId, 
+              isJsPsych, params) {
+    var num_features = params.label.length
     var num_audio = data.nodes.length
     var nodescopy = []
     var i, j
@@ -1064,17 +1122,16 @@ class FeatureRatings extends SquareAudioGraph {
       }
     }
     data.nodes = nodescopy
-    super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
-          trial_id, width, nextURL, opacity=opacity, isJsPsych)
+    super(data, parentId, audioContainerId, buttonContainerId, isJsPsych, params)
     this.r = this.width/2-60
-    this.feature_height = num_audio*item_spacing
+    this.feature_height = num_audio*params.item_spacing
     if (num_features>1) {
       this.ypos = makeArray(30+this.feature_height, 30+70*(num_features-1)+this.feature_height*(num_features*2-1), num_features)
     } else {
       this.ypos = [30+this.feature_height]
     }
-    this.feature_labels = feature_labels
-    this.feature_anchors = feature_anchors
+    this.feature_labels = params.label
+    this.feature_anchors = params.anchors
     if (num_audio>1) {
       this.ympos = makeArray(-this.feature_height, this.feature_height, Math.floor(this.num_items/num_features))
     } else {
@@ -1087,14 +1144,13 @@ class FeatureRatings extends SquareAudioGraph {
   }
 
   submitFcn() {
-    var i, j
     var results = []
-    for (i=0; i<this.num_audio; i++) {
+    for (var i=0; i<this.num_audio; i++) {
       results.push({'id': this.nodes[i*this.num_features].id,
                     'audiofile': this.nodes[i*this.num_features].audiofile,
                     'values': [], 
                     'elapsed': this.audios[i].elapsed/this.audios[i].duration})
-      for (j=0; j<this.num_features; j++) {
+      for (var j=0; j<this.num_features; j++) {
         var x = (this.nodes[i*this.num_features+j].x-this.h+this.r)/this.r/2
         results[i].values.push(x)
       }
@@ -1215,9 +1271,9 @@ class FeatureRatingsStatic extends FeatureRatings {
 class AudioGraphStatic extends SquareAudioGraph {
 
   constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=false,
-              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false) {
+              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false, loop=true) {
     super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
-          trial_id, width, nextURL, opacity=opacity, isJsPsych)
+          trial_id, width, nextURL, opacity=opacity, isJsPsych, loop)
     this.opacity = .85
   }
 
@@ -1262,9 +1318,9 @@ class AudioGraphStatic extends SquareAudioGraph {
 class AudioGraphMultipleStatic extends AudioGraphStatic {
 
   constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=false,
-              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false) {
+              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false, loop=true) {
     super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
-          trial_id, width, nextURL, opacity=opacity, isJsPsych)
+          trial_id, width, nextURL, opacity=opacity, isJsPsych, loop)
 
     this.height = width/2
 
@@ -1333,9 +1389,9 @@ class AudioGraphMultipleStatic extends AudioGraphStatic {
 class AudioGraphStatic3d extends AudioGraphStatic {
 
   constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=false,
-              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false) {
+              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false, loop=true) {
     super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
-          trial_id, width, nextURL, opacity=opacity, isJsPsych)
+          trial_id, width, nextURL, opacity=opacity, isJsPsych, loop)
     var startAngle = Math.PI, scale = 1, key = function(d){ return d.id; }
     this.startAngle = startAngle
     this.xangle = startAngle
@@ -1537,7 +1593,6 @@ function getStrokeSame(self, edge, l, i) {
   return [stroke, stroke_width]
 }
 
-
 function edgeLength(edge) {
   x1 = edge.x1.animVal.value
   x2 = edge.x2.animVal.value
@@ -1550,7 +1605,7 @@ function computeLength(x1, x2, y1, y2) {
   return Math.sqrt((x1-x2)**2+(y1-y2)**2)
 }
 
-function showPlaybackTools(data, audiofile_id) {
+function showPlaybackTools(data, audiofile_id, loop) {
     // Audio Player
     let url;
     if (data instanceof Blob) {
@@ -1561,7 +1616,7 @@ function showPlaybackTools(data, audiofile_id) {
     }
     let player = document.getElementById("page-audio-"+audiofile_id)
     player.src = url;
-    player.loop = true
+    player.loop = loop; // True or False
 }
 
 function requestAudio(audiofile_id, url="") {
@@ -1580,7 +1635,7 @@ function requestAudio(audiofile_id, url="") {
       ),
       processData: false,
       success: function( data, textStatus, jQxhr ){
-          showPlaybackTools(data.audio.type+';'+data.audio.data, audiofile_id)
+          showPlaybackTools(data.audio.type+';'+data.audio.data, audiofile_id, true)
       },
       error: function( jqXhr, textStatus, errorThrown ){
           console.log( errorThrown );
@@ -1686,5 +1741,10 @@ function submitResultsJsPsych(results, nextURL) {
     }
   }
   nextURL.innerHTML = '';
-  jsPsych.finishTrial(trial_data);
+  var version = this.jsPsych.version()
+  if (parseInt(version.split('.')[0])>=7) {
+    this.jsPsych.finishTrial(trial_data);
+  } else {
+    jsPsych.finishTrial(trial_data);
+  }
 }

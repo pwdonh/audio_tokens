@@ -2,11 +2,11 @@
 <html>
     <head>
         <title>My experiment</title>
-        <script src="js/jspsych.js"></script>
-        <script src="js/jspsych-audio-tokens.js"></script>
+        <script src="https://unpkg.com/jspsych@7.0.0"></script>
+        <script src="js/jspsych-audio-tokens-v7.js"></script>
         <script src="js/audio-tokens.js"></script>
         <script src="//d3js.org/d3.v4.min.js"></script>
-        <link href="css/jspsych.css" rel="stylesheet" type="text/css">
+        <link href="https://unpkg.com/jspsych@7.0.0/css/jspsych.css" rel="stylesheet" type="text/css" />
     </head>
     <body>
     </body>
@@ -26,55 +26,72 @@
         ]
 
         var single_feature_trial = {
-            type: 'audio-tokens',
+            type: jsPsychAudioTokens,
             ratingtype: 'features',
             stimuli: stimuli.slice(0,4), // select only first four stimuli
             label: ['Feature 1'],
-            anchors: [['low', '', 'high']]
+            anchors: [['low', '', 'high']],
+            force_listen: false,
+            loop: true
         }
 
         var multiple_feature_trial = {
-            type: 'audio-tokens',
+            type: jsPsychAudioTokens,
             ratingtype: 'features',
             stimuli: stimuli.slice(0,4),
             label: ['Feature 1', 'Feature 2', 'Feature 3'],
             anchors: [['low', '', 'high'],
                       ['low', '', 'high'],
-                      ['low', '', 'high']]
+                      ['low', '', 'high']],
+            force_listen: false,
+            loop: true,
+            draw_edges: true
         }
 
         var features2d_trial = {
-            type: 'audio-tokens',
+            type: jsPsychAudioTokens,
             ratingtype: 'features2d',
             stimuli: stimuli, // select all stimuli
             label: ['Feature 1', 'Feature 2'],
             anchors: [['low', '', 'high'],
-                      ['low', '', 'high']]
+                      ['low', '', 'high']],
+            force_listen: false,
+            loop: true,
+            draw_edges: true
         }
 
         var categories_trial = {
-            type: 'audio-tokens',
+            type: jsPsychAudioTokens,
             ratingtype: 'categories',
             stimuli: stimuli,
             label: ['Category 1', 'Category 2'],
+            force_listen: false,
+            loop: true
         }
 
         var cluster_trial = {
-            type: 'audio-tokens',
+            type: jsPsychAudioTokens,
             ratingtype: 'cluster',
             stimuli: stimuli,
+            force_listen: false,
+            loop: true
         }
 
         var similarity_trial = {
-            type: 'audio-tokens',
+            type: jsPsychAudioTokens,
             ratingtype: 'similarity',
             stimuli: stimuli,
+            force_listen: false,
+            loop: true,
+            draw_edges: true
         }
 
         var triplets_trial = {
-            type: 'audio-tokens',
+            type: jsPsychAudioTokens,
             ratingtype: 'triplets',
-            stimuli: stimuli
+            stimuli: stimuli,
+            force_listen: false,
+            loop: true
         }
 
         // Add all trials to a timeline array
@@ -88,14 +105,14 @@
             triplets_trial
         ]
 
-        // Start jspsych experiment
-        jsPsych.init({
-            timeline: timeline,
+        var jsPsych = initJsPsych({
             show_progress_bar: true,
-            on_finish: function() {
+            on_finish: function(){
                 jsPsych.data.displayData();
             }
-        })
+        });
+
+        jsPsych.run(timeline);
 
     </script>
 </html>

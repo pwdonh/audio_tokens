@@ -111,7 +111,7 @@ This is the long-format data after conversion, with one row per stimulus. The co
 
 <img src="../imgs/figure_cluster.png" alt="drawing" width="300"/>
 
-This is the long-format data after conversion, with one row per stimulus. The column `rating` now contains the label of the cluster: $cluster_{1..n}$ depending on how many clusters the participant has generated.
+This is the long-format data after conversion, with one row per stimulus. The column `rating` now contains the label of the cluster: `cluster_*` depending on how many clusters the participant has generated.
 
 |    | stimulus                              | rating               | label     | trial_index | ratingtype |
 |----|---------------------------------------|----------------------|-----------|-------------|------------|

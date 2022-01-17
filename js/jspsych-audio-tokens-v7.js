@@ -42,7 +42,8 @@ var jsPsychAudioTokens = (function (jspsych) {
       },
       mute_key: {
         type: jspsych.ParameterType.KEYS,
-        default: 's'
+        default: ''
+        // to enable a mute key, enter a key here, e.g. 's'
       }
     },
   };

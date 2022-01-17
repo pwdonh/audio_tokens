@@ -47,7 +47,8 @@ jsPsych.plugins["audio-tokens"] = (function() {
       },
       mute_key: {
         type: jsPsych.plugins.parameterType.KEYS,
-        default: 's'
+        default: ''
+        // to enable a mute key, enter a key here, e.g. 's'
       }            
     }
   }

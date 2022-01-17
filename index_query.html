@@ -2,11 +2,11 @@
 <html>
     <head>
         <title>My experiment</title>
-        <script src="https://unpkg.com/jspsych@6.3.1"></script>
-        <script src="js/jspsych-audio-tokens.js"></script>
+        <script src="https://unpkg.com/jspsych@7.0.0"></script>
+        <script src="js/jspsych-audio-tokens-v7.js"></script>
         <script src="js/audio-tokens.js"></script>
         <script src="//d3js.org/d3.v4.min.js"></script>
-        <link href="https://unpkg.com/jspsych@6.3.1/css/jspsych.css" rel="stylesheet" type="text/css" />
+        <link href="https://unpkg.com/jspsych@7.0.0/css/jspsych.css" rel="stylesheet" type="text/css" />
     </head>
     <body>
     </body>
@@ -28,63 +28,74 @@
             ]
 
             var single_feature_trial = {
-                type: 'audio-tokens',
+                type: jsPsychAudioTokens,
                 ratingtype: 'features',
                 stimuli: stimuli.slice(0,4), // select only first four stimuli
                 label: ['Feature 1'],
                 anchors: [['low', '', 'high']],
-                force_listen: false
+                force_listen: false,
+                loop: true
             }
 
             var multiple_feature_trial = {
-                type: 'audio-tokens',
+                type: jsPsychAudioTokens,
                 ratingtype: 'features',
                 stimuli: stimuli.slice(0,4),
                 label: ['Feature 1', 'Feature 2', 'Feature 3'],
                 anchors: [['low', '', 'high'],
-                          ['low', '', 'high'],
-                          ['low', '', 'high']],
-                force_listen: false
+                        ['low', '', 'high'],
+                        ['low', '', 'high']],
+                force_listen: false,
+                loop: true,
+                draw_edges: true
             }
 
             var features2d_trial = {
-                type: 'audio-tokens',
+                type: jsPsychAudioTokens,
                 ratingtype: 'features2d',
                 stimuli: stimuli, // select all stimuli
                 label: ['Feature 1', 'Feature 2'],
                 anchors: [['low', '', 'high'],
-                          ['low', '', 'high']],
-                force_listen: false
+                        ['low', '', 'high']],
+                force_listen: false,
+                loop: true,
+                draw_edges: true
             }
 
             var categories_trial = {
-                type: 'audio-tokens',
+                type: jsPsychAudioTokens,
                 ratingtype: 'categories',
                 stimuli: stimuli,
                 label: ['Category 1', 'Category 2'],
-                force_listen: false
+                force_listen: false,
+                loop: true
             }
 
             var cluster_trial = {
-                type: 'audio-tokens',
+                type: jsPsychAudioTokens,
                 ratingtype: 'cluster',
                 stimuli: stimuli,
-                force_listen: false
+                force_listen: false,
+                loop: true
             }
 
             var similarity_trial = {
-                type: 'audio-tokens',
+                type: jsPsychAudioTokens,
                 ratingtype: 'similarity',
                 stimuli: stimuli,
-                force_listen: false
+                force_listen: false,
+                loop: true,
+                draw_edges: true
             }
 
             var triplets_trial = {
-                type: 'audio-tokens',
+                type: jsPsychAudioTokens,
                 ratingtype: 'triplets',
                 stimuli: stimuli,
-                force_listen: false
+                force_listen: false,
+                loop: true
             }
+
 
             return {
             'single_feature': single_feature_trial,
@@ -111,16 +122,20 @@
         }
         if (url.searchParams.get('draw_edges')) {
             trial.draw_edges = url.searchParams.get('draw_edges')=='true'
-        }        
+        }     
+        if (url.searchParams.get('mute_key')) {
+            trial.mute_key = url.searchParams.get('mute_key')
+        }            
         var show_progress = false
 
-        jsPsych.init({
-            timeline: [trial],
+        var jsPsych = initJsPsych({
             show_progress_bar: show_progress,
-            on_finish: function() {
+            on_finish: function(){
                 jsPsych.data.displayData();
             }
-        })
+        });
+
+        jsPsych.run([trial]);
 
     </script>
 </html>

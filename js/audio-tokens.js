@@ -112,18 +112,41 @@ class AudioGraph {
   build() {
     if (this.buttonContainerId.length==0) {
       this.startFcn()
-    } else {
+    } else {   
       this.start_btn = document.createElement("BUTTON");
       this.start_btn.innerHTML = 'Start'
       this.start_btn.className += this.buttonClass
       this.start_btn.addEventListener("click", this.startFcn.bind(this))
-      document.getElementById(this.buttonContainerId).appendChild(this.start_btn)
+      
       this.submit_btn = document.createElement("BUTTON");
       this.submit_btn.innerHTML = 'Submit'
       this.submit_btn.className += this.buttonClass
       this.submit_btn.disabled = true
       this.submit_btn.addEventListener("click", this.submitFcn.bind(this))
+      
+      this.mute_icon = document.createElement("OBJECT");
+      this.mute_icon.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="25" height="25" viewBox="0 0 75 75"
+        stroke="#111" stroke-width="5">
+        <path d="m39,14-17,15H6V48H22l17,15z" fill="#111" stroke-linejoin="round"/>
+        <path d="m49,26 20,24m0-24-20,24" fill="none" stroke-linecap="round"/>
+        </svg>
+      `      
+      this.mute_icon.id = 'mute-icon'
+      this.mute_icon.style.visibility = 'hidden'
+
+      var spaceholder = document.createElement("OBJECT");
+      spaceholder.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="25" height="25" viewBox="0 0 75 75"
+        stroke="#111" stroke-width="5">
+        </svg>
+      `   
+      spaceholder.id = 'spaceholder'
+
+      document.getElementById(this.buttonContainerId).appendChild(spaceholder)
+      document.getElementById(this.buttonContainerId).appendChild(this.start_btn)
       document.getElementById(this.buttonContainerId).appendChild(this.submit_btn)
+      document.getElementById(this.buttonContainerId).appendChild(this.mute_icon)
     }
   }
 
@@ -285,10 +308,14 @@ class AudioGraph {
 
     d3.select('body').on("keypress", function() {
       for (var i=0; i<self.audios.length; i++) {
-        console.log(self.audios[i].elapsed)
       }    
       if (d3.event.key==self.mute_key){
         self.play = !self.play
+        if (self.play) {
+          self.mute_icon.style.visibility = 'hidden'
+        } else {
+          self.mute_icon.style.visibility = 'visible'
+        }
         if (self.hovered>-1) {
           var hovered = self.hovered
           if (self.play) {

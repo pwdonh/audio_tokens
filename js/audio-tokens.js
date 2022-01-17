@@ -304,7 +304,7 @@ class AudioGraph {
     })
   }
 
-  mouseover(self, circle, style, d, i) {
+  mouseover(self, circle, style, d, i) {    
     self.hovered = i
     self.d_next = d
     self.circle_next = circle
@@ -778,6 +778,22 @@ class TripletAudioGraph extends SquareAudioGraph {
                         .style("fill", "none")
   }
 
+  mouseover(self, circle, style, d, i) {
+    var x = parseFloat(circle.cx.animVal.value)
+    var y = parseFloat(circle.cy.animVal.value)
+    if (self.is_in(self, x, y)) {
+      super.mouseover(self, circle, style, d, i)
+    }
+  }  
+
+  mouseout(self, circle, style, d) {
+    var x = parseFloat(circle.cx.animVal.value)
+    var y = parseFloat(circle.cy.animVal.value)    
+    if (self.is_in(self, x, y)) {
+      super.mouseout(self, circle, style, d)
+    }
+  }    
+
   setupDrag() {
     var circles = this.svg.selectAll('circle')
     self = this
@@ -785,35 +801,37 @@ class TripletAudioGraph extends SquareAudioGraph {
       var circle = this
       var cx = circle.cx.animVal.value
       var cy = circle.cy.animVal.value
-      var num_completed = 0
-      for (var i=0; i<self.nodes.length; i++) {
-        if (self.nodes[i].id==circle.id) {
-          var i_node = i
+      if (self.is_in(self, parseFloat(cx), parseFloat(cy))) {      
+        var num_completed = 0
+        for (var i=0; i<self.nodes.length; i++) {
+          if (self.nodes[i].id==circle.id) {
+            var i_node = i
+          }
+          if (self.nodes[i].completed>0) {
+            num_completed += 1
+          }
         }
-        if (self.nodes[i].completed>0) {
-          num_completed += 1
-        }
-      }
-      self.nodes[i_node].completed = Date.now()-self.time_0
-      d3.selectAll(".node")
-        .filter(function(d, i) {
-            return d.id == circle.id;
-        })
-        .attr("cy", self.r)
-        .attr("cx", num_completed-30)
-
-      if ((self.nodes.length-num_completed)>3) {
+        self.nodes[i_node].completed = Date.now()-self.time_0
         d3.selectAll(".node")
           .filter(function(d, i) {
-              return i == 0;
+              return d.id == circle.id;
           })
-          .raise()
-          .transition().duration(200)
-          .attr("cx", cx)
-          .attr("cy", cy)
-          .style("opacity", self.opacity)
-      } else if ((self.nodes.length-num_completed)==3) {
-        self.submitFcn(self.nodes)
+          .attr("cy", self.r)
+          .attr("cx", num_completed-30)
+
+        if ((self.nodes.length-num_completed)>3) {
+          d3.selectAll(".node")
+            .filter(function(d, i) {
+                return i == 0;
+            })
+            .raise()
+            .transition().duration(200)
+            .attr("cx", cx)
+            .attr("cy", cy)
+            .style("opacity", self.opacity)
+        } else if ((self.nodes.length-num_completed)==3) {
+          self.submitFcn(self.nodes)
+        }
       }
     })
   }

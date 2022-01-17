@@ -43,12 +43,12 @@ The complete experiment can be written in one html-file and will look like [this
 <!DOCTYPE html>
 <html>
     <head>
-		<title>My experiment</title>
-		<script src="//d3js.org/d3.v4.min.js"></script>
-		<script src="js/audio-tokens.js"></script>
-		<script src="https://unpkg.com/jspsych@7.0.0"></script>
-		<script src="js/jspsych-audio-tokens-v7.js"></script>
-		<link href="https://unpkg.com/jspsych@7.0.0/css/jspsych.css" rel="stylesheet" type="text/css" />
+        <title>My experiment</title>
+        <script src="js/jspsych.js"></script>
+        <script src="js/jspsych-audio-tokens.js"></script>
+        <script src="//d3js.org/d3.v4.min.js"></script>
+        <script src="js/audio-tokens.js"></script>
+        <link href="jspsych.css" rel="stylesheet" type="text/css">
     </head>
     <body>
     </body>

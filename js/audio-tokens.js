@@ -13,6 +13,7 @@ class AudioGraph {
     this.opacity = params.opacity
     this.nextURL = params.nextURL
     this.loop = params.loop
+    this.mute_key = params.mute_key
     if (isJsPsych) {
         this.buttonClass = "jspsych-btn"
         this.submitResults = submitResultsJsPsych.bind(params)
@@ -282,13 +283,32 @@ class AudioGraph {
       self.mouseout(self, this, style, d)
     })
 
+    d3.select('body').on("keypress", function() {
+      for (var i=0; i<self.audios.length; i++) {
+        console.log(self.audios[i].elapsed)
+      }    
+      if (d3.event.key==self.mute_key){
+        self.play = !self.play
+        if (self.hovered>-1) {
+          var hovered = self.hovered
+          if (self.play) {
+            self.mouseover(self, self.circle_next, style, self.d_next, self.hovered)
+          } else {
+            self.play = true // for updating 'elapsed' variable
+            self.mouseout(self, self.circle_next, style, self.d_next)
+            self.play = false
+            self.hovered = hovered
+          }
+        }
+      }
+    })
   }
 
   mouseover(self, circle, style, d, i) {
     self.hovered = i
     self.d_next = d
     self.circle_next = circle
-    if ((self.highlighted==-1)&(!self.is_dragged)) {
+    if ((self.play)&(self.highlighted==-1)&(!self.is_dragged)) {
       if (self.player) {
         self.player.pause()
       }
@@ -309,7 +329,9 @@ class AudioGraph {
   mouseout(self, circle, style, d) {
     if ((self.highlighted==self.hovered)&(!self.is_dragged)) {
       var audio = self.audios[d.audioindex]
-      audio.elapsed += (Date.now()-audio.started)/1000.
+      if (self.play) {
+        audio.elapsed += (Date.now()-audio.started)/1000.
+      }
       // console.log(audio.elapsed)
       self.edgeHide(self)
       self.player.pause()

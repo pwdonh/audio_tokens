@@ -44,6 +44,10 @@ jsPsych.plugins["audio-tokens"] = (function() {
       draw_edges: {
         type: jsPsych.plugins.parameterType.BOOL,
         default: true
+      },
+      mute_key: {
+        type: jsPsych.plugins.parameterType.KEYS,
+        default: 's'
       }            
     }
   }

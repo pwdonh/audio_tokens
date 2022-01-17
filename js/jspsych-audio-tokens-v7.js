@@ -39,7 +39,11 @@ var jsPsychAudioTokens = (function (jspsych) {
       draw_edges: {
         type: jspsych.ParameterType.BOOL,
         default: true
-      }            
+      },
+      mute_key: {
+        type: jspsych.ParameterType.KEYS,
+        default: 's'
+      }
     },
   };
 

@@ -40,15 +40,14 @@ Here we go through the basic steps of using Audio-Tokens in a jsPsych experiment
 The complete experiment can be written in one html-file and will look like [this](https://pwdonh.github.io/audio_tokens/index_query.html?type=single_feature). This is the minimal page setup, excluding the jsPsych code:
 
 ```
-<!DOCTYPE html>
 <html>
     <head>
-        <title>My experiment</title>
-        <script src="js/jspsych.js"></script>
-        <script src="js/jspsych-audio-tokens-v7.js"></script>
-        <script src="//d3js.org/d3.v4.min.js"></script>
-        <script src="js/audio-tokens.js"></script>
-        <link href="jspsych.css" rel="stylesheet" type="text/css">
+		<title>My experiment</title>
+		<script src="//d3js.org/d3.v4.min.js"></script>
+		<script src="js/audio-tokens.js"></script>
+		<script src="https://unpkg.com/jspsych@7.0.0"></script>
+		<script src="js/jspsych-audio-tokens-v7.js"></script>
+		<link href="https://unpkg.com/jspsych@7.0.0/css/jspsych.css" rel="stylesheet" type="text/css" />
     </head>
     <body>
     </body>

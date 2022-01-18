@@ -45,7 +45,7 @@ The complete experiment can be written in one html-file and will look like [this
     <head>
         <title>My experiment</title>
         <script src="js/jspsych.js"></script>
-        <script src="js/jspsych-audio-tokens.js"></script>
+        <script src="js/jspsych-audio-tokens-v7.js"></script>
         <script src="//d3js.org/d3.v4.min.js"></script>
         <script src="js/audio-tokens.js"></script>
         <link href="jspsych.css" rel="stylesheet" type="text/css">

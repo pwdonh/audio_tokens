@@ -155,11 +155,11 @@ The results from these trials are converted trial by trial into similarity matri
 
 <img src="../imgs/figure_triplet.png" alt="drawing" width="300"/>
 
-The results from these trials are converted into long format in the following way [`converted/example_results_triplets.csv`](./converted/example_results_triplets.csv). Each row represents one triplet and has three columns for filenames (`stim_0, stim_1, stim_2`). Column `selected` specifies the stimulus that was selected as the odd-one-out (`0, 1` or `2`). Column `last_selected` specifies which position was selected last, i.e. which of the stimuli is new (`0, 1, 2`, or `-1` if it's the first triplet in this trial). Column `i_triplet` specifies the order of the triplet within the current trial.
+The results from these trials are converted into long format in the following way [`converted/example_results_triplets.csv`](./converted/example_results_triplets.csv). Each row represents one triplet and has three columns for filenames (`stim_0, stim_1, stim_2`). Column `selected` specifies the stimulus that was selected as the odd-one-out (`0, 1` or `2`). Column `last_selected` specifies which position was selected last, i.e. which of the stimuli is new (`0, 1, 2`, or `3` if it's the first triplet in this trial). Column `i_triplet` specifies the order of the triplet within the current trial.
 
 |   | stim_0                                | stim_1                                | stim_2                                | selected | last_selected | trial_index | i_triplet |
 |---|---------------------------------------|---------------------------------------|---------------------------------------|----------|---------------|-------------|-----------|
-| 0 | data/speaker1.wav   | data/speaker2.wav | data/speaker3.wav | 0        | -1            | 6           | 0         |
+| 0 | data/speaker1.wav   | data/speaker2.wav | data/speaker3.wav | 0        | 3            | 6           | 0         |
 | 1 | data/speaker4.wav    | data/speaker2.wav | data/speaker3.wav | 1        | 0             | 6           | 1         |
 | 2 | data/speaker4.wav    | data/speaker5.wav   | data/speaker3.wav | 0        | 1             | 6           | 2         |
 | 3 | data/speaker6.wav | data/speaker5.wav   | data/speaker3.wav | 2        | 0             | 6           | 3         |

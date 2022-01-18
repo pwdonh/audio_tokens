@@ -91,7 +91,7 @@ def parse_triplet_row(row):
     stimuli = np.array(row['stimuli'])
     num_triplets = len(selections)-2
     triplet = np.arange(3).tolist()
-    last_selected = -1
+    last_selected = 3
     for i_triplet in range(num_triplets):
         i_select = selections[triplet].argmin()
         df_triplets.loc[i_triplet, 'selected'] = i_select

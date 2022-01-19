@@ -331,18 +331,26 @@ class AudioGraph {
     })
   }
 
+  playAudio(id) {
+    if (this.player) {
+      this.player.pause()
+    }    
+    this.player = document.getElementById("page-audio-"+id)
+    this.player.play()    
+  }
+
+  pauseAudio() {
+    this.player.pause()
+  }
+
   mouseover(self, circle, style, d, i) {    
     self.hovered = i
     self.d_next = d
     self.circle_next = circle
     if ((self.play)&(self.highlighted==-1)&(!self.is_dragged)) {
-      if (self.player) {
-        self.player.pause()
-      }
       self.audios[d.audioindex].started = Date.now()
-      self.player = document.getElementById("page-audio-"+circle.id)
       self.highlighted = i
-      self.player.play()
+      self.playAudio(circle.id)
       d3.select(circle)
        .attr("r", self.circle_size_2(self, d))
        .style("stroke", style.border_color_2)
@@ -361,7 +369,7 @@ class AudioGraph {
       }
       // console.log(audio.elapsed)
       self.edgeHide(self)
-      self.player.pause()
+      self.pauseAudio()
       audio.duration = self.player.duration
       if (audio.elapsed>audio.duration) {
         var opacity = 1.

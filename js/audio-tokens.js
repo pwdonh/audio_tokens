@@ -45,7 +45,7 @@ class AudioGraph {
     }
     this.edge_on_hover = false
 
-    this.setupAudio()
+    this.build()
 
   }
 
@@ -115,7 +115,7 @@ class AudioGraph {
       this.start_btn = document.createElement("BUTTON");
       this.start_btn.innerHTML = 'Start'
       this.start_btn.className += this.buttonClass
-      this.start_btn.addEventListener("click", this.startFcn.bind(this))
+      this.start_btn.addEventListener("click", this.setupAudio.bind(this))
       
       this.submit_btn = document.createElement("BUTTON");
       this.submit_btn.innerHTML = 'Submit'
@@ -149,46 +149,68 @@ class AudioGraph {
     }
   }
 
-  loadDurations() {
-    for (i=0; i<this.num_items; i++) {
-      this.player.src = this.nodes[i].audiofile
-      this.audios[i].duration = this.player.duration
-    }    
-    console.log(this.audios)
-  }
+  // preloadAudio(url, audiofile_id) {
+  //   // https://stackoverflow.com/questions/31060642/preload-multiple-audio-files
+  //   var audio = new Audio();
+  //   // once this file loads, it will call loadedAudio()
+  //   // the file will be kept by the browser as cache
+  //   audio.addEventListener('canplaythrough', this.loadedAudio.bind(this), false);
+  //   audio.src = url;
+  // }
 
-  preloadAudio(url, audiofile_id) {
-    // https://stackoverflow.com/questions/31060642/preload-multiple-audio-files
-    var audio = new Audio();
-    // once this file loads, it will call loadedAudio()
-    // the file will be kept by the browser as cache
-    audio.addEventListener('canplaythrough', this.loadedAudio.bind(this), false);
-    audio.src = url;
-  }
-
-  loadedAudio() {
-    // this will be called every time an audio file is loaded
-    // we keep track of the loaded files vs the requested files
-    this.loaded += 1
-    if (this.loaded == this.num_items){
-    	// all have loaded
-      // this.loadDurations()
-    	this.build();
+  loadedAudio(bufferList) {
+    this.buffers = bufferList
+    for (var i=0; i<this.num_items; i++) {
+    //   var source = this.context.createBufferSource();
+    //   source.buffer = bufferList[i]
+    //   this.sources.push(source)
+      this.audios[i].duration = this.buffers[i].duration
     }
-  }  
+    this.startFcn()
+  }
+
+  // loadedAudio() {
+  //   // this will be called every time an audio file is loaded
+  //   // we keep track of the loaded files vs the requested files
+  //   this.loaded += 1
+  //   if (this.loaded == this.num_items){
+  //   	// all have loaded
+  //   	this.build();
+  //   }
+  // }  
 
   setupAudio() {
-    document.getElementById(this.audioContainerId).innerHTML += '<audio id="page-audio"></audio>'
-    this.player = document.getElementById('page-audio');
-    this.loaded = 0
+    var audiofiles = []
+    console.log(this.nodes)
     for (var i=0; i<this.num_items; i++) {
+      audiofiles.push(this.nodes[i].audiofile)
       this.audios.push({duration: 0., elapsed: 0., started: 0.})
       if (!('audioindex' in this.nodes[i])) {
         this.nodes[i].audioindex = i
-      }
-      this.preloadAudio(this.nodes[i].audiofile, i);
+      }      
     }
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+    this.context = new AudioContext();
+    var bufferLoader = new BufferLoader(
+      this.context,
+      audiofiles,
+      this.loadedAudio.bind(this)
+    );
+    bufferLoader.load();
   }
+
+  // setupAudio() {
+  //   document.getElementById(this.audioContainerId).innerHTML += '<audio id="page-audio"></audio>'
+  //   this.player = document.getElementById('page-audio');
+  //   this.loaded = 0
+  //   for (var i=0; i<this.num_items; i++) {
+  //     this.audios.push({duration: 0., elapsed: 0., started: 0.})
+  //     if (!('audioindex' in this.nodes[i])) {
+  //       this.nodes[i].audioindex = i
+  //     }
+  //     this.preloadAudio(this.nodes[i].audiofile, i);
+  //   }
+  // }
 
   // setupAudio() {
   //   const tracks = []
@@ -374,12 +396,24 @@ class AudioGraph {
 
 
   playAudio(audiofile_id) {
-    console.log(this.audios)
-    this.player.src = this.nodes[audiofile_id].audiofile
-    var audio = this.audios[this.nodes[audiofile_id].audioindex]
-    audio.duration = this.player.duration
-    this.player.play()
-  }  
+    if (this.source) {
+      this.source.stop()
+    }        
+    this.source = this.context.createBufferSource()
+    this.source.buffer = this.buffers[audiofile_id] 
+    this.source.connect(this.context.destination)
+    this.source.start(0)
+    // var audio = this.audios[this.nodes[audiofile_id].audioindex]
+    // audio.duration = this.source.buffer.duration
+  }
+
+  // playAudio(audiofile_id) {
+  //   console.log(this.audios)
+  //   this.player.src = this.nodes[audiofile_id].audiofile
+  //   var audio = this.audios[this.nodes[audiofile_id].audioindex]
+  //   audio.duration = this.player.duration
+  //   this.player.play()
+  // }  
 
   // playAudio(id) {
   //   if (this.player) {
@@ -390,14 +424,20 @@ class AudioGraph {
   // }
 
   pauseAudio() {
-    this.player.pause()
+    this.source.stop()
+    this.source.disconnect()
   }
+
+  // pauseAudio() {
+  //   this.player.pause()
+  // }
 
   mouseover(self, circle, style, d, i) {    
     self.hovered = i
     self.d_next = d
     self.circle_next = circle
     if ((self.play)&(self.highlighted==-1)&(!self.is_dragged)) {
+      console.log(self.audios)
       self.audios[d.audioindex].started = Date.now()
       self.highlighted = i
       self.playAudio(i)
@@ -420,7 +460,7 @@ class AudioGraph {
       // console.log(audio.elapsed)
       self.edgeHide(self)
       self.pauseAudio()
-      audio.duration = self.player.duration
+      // audio.duration = self.source.duration
       if (audio.elapsed>audio.duration) {
         var opacity = 1.
       } else {
@@ -1355,7 +1395,7 @@ class AudioGraphStatic extends SquareAudioGraph {
       this.start_btn = document.createElement("BUTTON");
       this.start_btn.innerHTML = 'Plot'
       this.start_btn.className += this.buttonClass
-      this.start_btn.addEventListener("click", this.startFcn.bind(this))
+      this.start_btn.addEventListener("click", this.setupAudio.bind(this))
       document.getElementById(this.buttonContainerId).appendChild(this.start_btn)
     }
   }
@@ -1634,6 +1674,53 @@ class AudioGraphStatic3d extends AudioGraphStatic {
     return circles
   }
 
+}
+
+function BufferLoader(context, urlList, callback) {
+  this.context = context;
+  this.urlList = urlList;
+  this.onload = callback;
+  this.bufferList = new Array();
+  this.loadCount = 0;
+}
+
+BufferLoader.prototype.loadBuffer = function(url, index) {
+  // Load buffer asynchronously
+  var request = new XMLHttpRequest();
+  request.open("GET", url, true);
+  request.responseType = "arraybuffer";
+
+  var loader = this;
+
+  request.onload = function() {
+      // Asynchronously decode the audio file data in request.response
+      loader.context.decodeAudioData(
+      request.response,
+      function(buffer) {
+          if (!buffer) {
+              alert('error decoding file data: ' + url);
+              return;
+          }
+          loader.bufferList[index] = buffer;
+          if (++loader.loadCount == loader.urlList.length)
+          loader.onload(loader.bufferList);
+      },
+      function(error) {
+          console.error('decodeAudioData error', error);
+      }
+      );
+  }
+
+  request.onerror = function() {
+      alert('BufferLoader: XHR error');
+  }
+
+  request.send();
+}
+
+BufferLoader.prototype.load = function() {
+  for (var i = 0; i < this.urlList.length; ++i)
+  this.loadBuffer(this.urlList[i], i);
 }
 
 function getStrokeSame(self, edge, l, i) {

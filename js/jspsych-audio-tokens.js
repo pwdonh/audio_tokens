@@ -140,8 +140,8 @@ jsPsych.plugins["audio-tokens"] = (function() {
       )
     }
 
-    // Show graph
-    graph.build()
+    // // Show graph
+    // graph.build()
 
   };
 

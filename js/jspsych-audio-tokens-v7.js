@@ -141,8 +141,8 @@ var jsPsychAudioTokens = (function (jspsych) {
         )
       }
 
-      // Show graph
-      graph.build()
+      // // Show graph
+      // graph.build()
     }
   }
   PluginNamePlugin.info = info;

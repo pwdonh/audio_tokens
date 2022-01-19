@@ -45,7 +45,6 @@ class AudioGraph {
     }
     this.edge_on_hover = false
 
-    // load audio
     this.setupAudio()
 
   }
@@ -81,7 +80,7 @@ class AudioGraph {
   }
 
   startFcn() {
-    this.unblockAudio()
+    // this.unblockAudio()
     this.layout()
     this.draw()
     this.setupHover()
@@ -150,30 +149,72 @@ class AudioGraph {
     }
   }
 
-  setupAudio() {
-    const tracks = []
-    var player_id, player, i
+  loadDurations() {
     for (i=0; i<this.num_items; i++) {
-      player_id = 'page-audio-'+this.nodes[i].id
-      if (!!document.getElementById(player_id)) {
-        console.log('audiofile id already loaded')
-      } else {
-        this.audios.push({duration: 0., elapsed: 0., started: 0.})
-        document.getElementById(this.audioContainerId).innerHTML += '<audio id="'+player_id+'"></audio>'
-        if (this.nodes[i].audiofile.length>0) {
-          showPlaybackTools(this.nodes[i].audiofile, this.nodes[i].id, this.loop)
-        } else {
-          requestAudio(this.nodes[i].id)
-        }
-      }
-      this.nodes[i].duration = 0.
-      this.nodes[i].elapsed = 0.
-      this.nodes[i].started = 0
+      this.player.src = this.nodes[i].audiofile
+      this.audios[i].duration = this.player.duration
+    }    
+    console.log(this.audios)
+  }
+
+  preloadAudio(url, audiofile_id) {
+    // https://stackoverflow.com/questions/31060642/preload-multiple-audio-files
+    var audio = new Audio();
+    // once this file loads, it will call loadedAudio()
+    // the file will be kept by the browser as cache
+    audio.addEventListener('canplaythrough', this.loadedAudio.bind(this), false);
+    audio.src = url;
+  }
+
+  loadedAudio() {
+    // this will be called every time an audio file is loaded
+    // we keep track of the loaded files vs the requested files
+    this.loaded += 1
+    if (this.loaded == this.num_items){
+    	// all have loaded
+      // this.loadDurations()
+    	this.build();
+    }
+  }  
+
+  setupAudio() {
+    document.getElementById(this.audioContainerId).innerHTML += '<audio id="page-audio"></audio>'
+    this.player = document.getElementById('page-audio');
+    this.loaded = 0
+    for (var i=0; i<this.num_items; i++) {
+      this.audios.push({duration: 0., elapsed: 0., started: 0.})
       if (!('audioindex' in this.nodes[i])) {
         this.nodes[i].audioindex = i
       }
+      this.preloadAudio(this.nodes[i].audiofile, i);
     }
   }
+
+  // setupAudio() {
+  //   const tracks = []
+  //   var player_id, player, i
+  //   for (i=0; i<this.num_items; i++) {
+  //     player_id = 'page-audio-'+this.nodes[i].id
+  //     if (!!document.getElementById(player_id)) {
+  //       console.log('audiofile id already loaded')
+  //     } else {
+  //       this.audios.push({duration: 0., elapsed: 0., started: 0.})
+  //       document.getElementById(this.audioContainerId).innerHTML += '<audio id="'+player_id+'"></audio>'
+  //       if (this.nodes[i].audiofile.length>0) {
+  //         showPlaybackTools(this.nodes[i].audiofile, this.nodes[i].id, this.loop)
+  //       } else {
+  //         requestAudio(this.nodes[i].id)
+  //       }
+  //     }
+  //     this.nodes[i].duration = 0.
+  //     this.nodes[i].elapsed = 0.
+  //     this.nodes[i].started = 0
+  //     if (!('audioindex' in this.nodes[i])) {
+  //       this.nodes[i].audioindex = i
+  //     }
+  //   }
+  //   this.build()
+  // }
 
   layout() {
     var alphas = makeArray(-3.141592653589793,3.141592653589793,this.num_items+1).slice(1,)
@@ -331,13 +372,22 @@ class AudioGraph {
     })
   }
 
-  playAudio(id) {
-    if (this.player) {
-      this.player.pause()
-    }    
-    this.player = document.getElementById("page-audio-"+id)
-    this.player.play()    
-  }
+
+  playAudio(audiofile_id) {
+    console.log(this.audios)
+    this.player.src = this.nodes[audiofile_id].audiofile
+    var audio = this.audios[this.nodes[audiofile_id].audioindex]
+    audio.duration = this.player.duration
+    this.player.play()
+  }  
+
+  // playAudio(id) {
+  //   if (this.player) {
+  //     this.player.pause()
+  //   }    
+  //   this.player = document.getElementById("page-audio-"+id)
+  //   this.player.play()    
+  // }
 
   pauseAudio() {
     this.player.pause()
@@ -350,7 +400,7 @@ class AudioGraph {
     if ((self.play)&(self.highlighted==-1)&(!self.is_dragged)) {
       self.audios[d.audioindex].started = Date.now()
       self.highlighted = i
-      self.playAudio(circle.id)
+      self.playAudio(i)
       d3.select(circle)
        .attr("r", self.circle_size_2(self, d))
        .style("stroke", style.border_color_2)
@@ -419,9 +469,9 @@ class AudioGraph {
      var i = 0
      var audio
      while (is_done & (i<self.nodes.length)) {
-       var player = document.getElementById('page-audio-'+String(self.nodes[i].id))
+      //  var player = document.getElementById('page-audio-'+String(self.nodes[i].id))
        audio = self.audios[self.nodes[i].audioindex]
-       audio.duration = player.duration
+      //  audio.duration = player.duration
        var is_listened = audio.elapsed>audio.duration
        var circle = document.getElementById(String(self.nodes[i].id))
        var x = circle.cx.animVal.value

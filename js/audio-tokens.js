@@ -1270,11 +1270,10 @@ class FeatureRatingsStatic extends FeatureRatings {
 
 class AudioGraphStatic extends SquareAudioGraph {
 
-  constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=false,
-              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false, loop=true) {
-    super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
-          trial_id, width, nextURL, opacity=opacity, isJsPsych, loop)
-    this.opacity = .85
+  constructor(data, parentId, audioContainerId, buttonContainerId, 
+    isJsPsych, params) {
+      super(data, parentId, audioContainerId, buttonContainerId, isJsPsych, params)
+      this.opacity = .85
   }
 
   circle_size_1(self, d) {

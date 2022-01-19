@@ -52,10 +52,17 @@
         html += '<div id="audio-container"></div>'        
         document.body.innerHTML += html
 
+        var params = {}
+        params.opacity = 1.
+        params.width = 400
+        params.trial_id = ''
+        params.nextURL = ''
+        params.draw_edges = false
+        params.loop = false
         var graph = new AudioGraphStatic(
-            data, 'plot-speakers', 'audio-container', buttonContainerId='button-container', draw_edges=false,
-            trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false)
-        
+            data, 'plot-speakers', 'audio-container', buttonContainerId='button-container',
+            isJsPsych=false, params=params)
+            
         graph.build()
 
     </script>

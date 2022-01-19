@@ -667,12 +667,12 @@ class SquareAudioGraph extends AudioGraph {
   drawBorder(svg) {
     var borderPath = svg.append("rect")
                         .attr('id', this.parentID+'-drop-box')
-                      	.attr("x", 30)
-                      	.attr("y", 30)
+                          .attr("x", 30)
+                          .attr("y", 30)
                         .attr("rx", 10)
                         .attr("ry", 10)
-                      	.attr("height", this.r*2)
-                      	.attr("width", this.r*2)
+                          .attr("height", this.r*2)
+                          .attr("width", this.r*2)
                         .style("stroke", 'black')
                         .style("fill", "none")
   }
@@ -718,12 +718,12 @@ class TripletStaticAudioGraph extends SquareAudioGraph {
   drawBorder(svg) {
     var borderPath = svg.append("rect")
                         .attr('id', this.parentID+'-drop-box')
-                      	.attr("x", 30+this.r/2)
-                      	.attr("y", 30)
+                          .attr("x", 30+this.r/2)
+                          .attr("y", 30)
                         .attr("rx", 10)
                         .attr("ry", 10)
-                      	.attr("height", this.r/3)
-                      	.attr("width", this.r)
+                          .attr("height", this.r/3)
+                          .attr("width", this.r)
                         .style("stroke", 'black')
                         .style("fill", "none")
   }
@@ -795,12 +795,12 @@ class TripletAudioGraph extends SquareAudioGraph {
   drawBorder(svg) {
     var borderPath = svg.append("rect")
                         .attr('id', this.parentID+'-drop-box')
-                      	.attr("x", 30+this.r/2)
-                      	.attr("y", 30)
+                          .attr("x", 30+this.r/2)
+                          .attr("y", 30)
                         .attr("rx", 10)
                         .attr("ry", 10)
-                      	.attr("height", this.r/3)
-                      	.attr("width", this.r)
+                          .attr("height", this.r/3)
+                          .attr("width", this.r)
                         .style("stroke", 'black')
                         .style("fill", "none")
   }
@@ -928,12 +928,12 @@ class FreesortGraph extends SquareAudioGraph {
       for (j=0; j<this.xpos.length; j++) {
         var borderPath = svg.append("rect")
                             .attr('id', this.parentID+'-drop-box')
-                          	.attr("x", this.xpos[j]-this.box_width/2)
-                          	.attr("y", this.ypos[i]-this.box_height/2)
+                              .attr("x", this.xpos[j]-this.box_width/2)
+                              .attr("y", this.ypos[i]-this.box_height/2)
                             .attr("rx", 10)
                             .attr("ry", 10)
-                          	.attr("height", this.box_height)
-                          	.attr("width", this.box_width)
+                              .attr("height", this.box_height)
+                              .attr("width", this.box_width)
                             .style("stroke", "black")
                             .style("fill", "none")
         this.addText(this.xpos[j], this.ypos[i]+20+this.box_height/2, this.feature_labels[j])
@@ -1171,12 +1171,12 @@ class FeatureRatings extends SquareAudioGraph {
       var ypos = this.ypos[i]-this.feature_height
       var borderPath = svg.append("rect")
                           .attr('id', this.parentID+'-drop-box')
-                        	.attr("x", 45)
-                        	.attr("y", ypos)
+                            .attr("x", 45)
+                            .attr("y", ypos)
                           .attr("rx", 10)
                           .attr("ry", 10)
-                        	.attr("height", this.feature_height*2)
-                        	.attr("width", this.r*2+30)
+                            .attr("height", this.feature_height*2)
+                            .attr("width", this.r*2+30)
                           .style("stroke", 'black')
                           .style("fill", "none")
       this.addText(this.h, ypos-19, this.feature_labels[i])
@@ -1270,11 +1270,10 @@ class FeatureRatingsStatic extends FeatureRatings {
 
 class AudioGraphStatic extends SquareAudioGraph {
 
-  constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=false,
-              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false, loop=true) {
-    super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
-          trial_id, width, nextURL, opacity=opacity, isJsPsych, loop)
-    this.opacity = .85
+  constructor(data, parentId, audioContainerId, buttonContainerId, 
+    isJsPsych, params) {
+      super(data, parentId, audioContainerId, buttonContainerId, isJsPsych, params)
+      this.opacity = .85
   }
 
   circle_size_1(self, d) {
@@ -1309,8 +1308,8 @@ class AudioGraphStatic extends SquareAudioGraph {
 
   colorSelect(self, i, colorpalette) {
     // console.log(self.nodes[i].i_group)
-    // return colorpalette(self.nodes[i].i_group)
-    return self.nodes[i].color
+    return colorpalette(self.nodes[i].i_group)
+    // return self.nodes[i].color
   }
 
 }
@@ -1364,22 +1363,22 @@ class AudioGraphMultipleStatic extends AudioGraphStatic {
   drawBorder(svg) {
     var borderPath = svg.append("rect")
                         .attr('id', this.parentID+'-drop-box')
-                      	.attr("x", 15)
-                      	.attr("y", 15)
+                          .attr("x", 15)
+                          .attr("y", 15)
                         .attr("rx", 10)
                         .attr("ry", 10)
-                      	.attr("height", this.r*2)
-                      	.attr("width", this.r*2)
+                          .attr("height", this.r*2)
+                          .attr("width", this.r*2)
                         .style("stroke", 'black')
                         .style("fill", "none")
     var borderPath2 = svg.append("rect")
                         .attr('id', this.parentID+'-drop-box')
-                      	.attr("x", 30*2+2*this.r)
-                      	.attr("y", 15)
+                          .attr("x", 30*2+2*this.r)
+                          .attr("y", 15)
                         .attr("rx", 10)
                         .attr("ry", 10)
-                      	.attr("height", this.r*2)
-                      	.attr("width", this.r*2)
+                          .attr("height", this.r*2)
+                          .attr("width", this.r*2)
                         .style("stroke", 'black')
                         .style("fill", "none")
   }
@@ -1388,10 +1387,13 @@ class AudioGraphMultipleStatic extends AudioGraphStatic {
 
 class AudioGraphStatic3d extends AudioGraphStatic {
 
-  constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=false,
-              trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false, loop=true) {
-    super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
-          trial_id, width, nextURL, opacity=opacity, isJsPsych, loop)
+  constructor(data, parentId, audioContainerId, buttonContainerId, 
+    isJsPsych, params) {
+      super(data, parentId, audioContainerId, buttonContainerId, isJsPsych, params)    
+  // constructor(data, parentId, audioContainerId, buttonContainerId='', draw_edges=false,
+  //             trial_id='', width=400, nextURL='', opacity=1., isJsPsych=false, loop=true) {
+  //   super(data, parentId, audioContainerId, buttonContainerId, draw_edges,
+  //         trial_id, width, nextURL, opacity=opacity, isJsPsych, loop)
     var startAngle = Math.PI, scale = 1, key = function(d){ return d.id; }
     this.startAngle = startAngle
     this.xangle = startAngle

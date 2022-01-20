@@ -440,7 +440,7 @@ class AudioGraph {
       console.log(self.audios)
       self.audios[d.audioindex].started = Date.now()
       self.highlighted = i
-      self.playAudio(i)
+      self.playAudio(d.audioindex)
       d3.select(circle)
        .attr("r", self.circle_size_2(self, d))
        .style("stroke", style.border_color_2)

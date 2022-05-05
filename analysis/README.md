@@ -137,7 +137,9 @@ The results from categorical ratings require a different format and are converte
 
 <img src="../imgs/figure_similarity.png" alt="drawing" width="300"/>
 
-The results from these trials are converted trial by trial into similarity matrices of the following format [`converted/example_results_similarity_trial5.csv`](./converted/example_results_similarity_trial5.csv):
+The values you get in the jsPsych results are [x, y] coordinates, these can be interpreted like this: The arena where the tokens can be placed is a circle with radius .5, so the coordinate [0, 0] will be the center of the circle, [-0.5, 0] e.g. will be the leftmost coordinate that you can place a token, [0.5, 0] the rightmost, etc. This means that the maximum distance between two tokens is 1.
+
+Using the python script, the results from these trials are converted trial by trial into similarity matrices. Similarity is computed as 1-distance, such that 0=most dissimilar, 1=most similar. The matrices are saved in the following format [`converted/example_results_similarity_trial5.csv`](./converted/example_results_similarity_trial5.csv):
 
 |                                       | data/speaker1.wav | data/speaker2.wav | data/speaker3.wav | data/speaker4.wav | data/speaker5.wav | data/speaker6.wav | data/speaker7.wav | data/speaker8.wav | data/speaker9.wav |
 |---------------------------------------|-------------------------------------|---------------------------------------|---------------------------------------|------------------------------------|-------------------------------------|---------------------------------------|---------------------------------------|-------------------------------------|-------------------------------------|

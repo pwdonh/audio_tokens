@@ -77,6 +77,9 @@ def audiotokens_to_long(df, row_indices):
 def compute_similarity_matrix(row):
     assert(row['ratingtype']=='similarity')
     similarity = squareform(1-pdist(row['ratings']))
+    # make sure that similarity on the diagonal is 1
+    similarity += np.eye(similarity.shape[0])
+    assert(similarity[0,0]==1.)
     df_sim = pd.DataFrame(
         index=row['stimuli'], columns=row['stimuli'], data=similarity
     )    

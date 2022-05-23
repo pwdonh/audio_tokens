@@ -40,6 +40,12 @@ var jsPsychAudioTokens = (function (jspsych) {
         type: jspsych.ParameterType.BOOL,
         default: true
       },
+      /** Any content here will be displayed below the stimulus. */
+      prompt: {
+        type: jspsych.ParameterType.HTML_STRING,
+        pretty_name: "Prompt",
+        default: null,
+      },      
       mute_key: {
         type: jspsych.ParameterType.KEYS,
         default: ''
@@ -99,6 +105,11 @@ var jsPsychAudioTokens = (function (jspsych) {
       html += '</div>'
       html += '</div>'
       html += '<div id="audio-container"></div>'
+
+      //show prompt if there is one
+      if (trial.prompt !== null) {
+        html += trial.prompt;
+      }
 
       display_element.innerHTML = html
 

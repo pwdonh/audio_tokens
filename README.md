@@ -80,7 +80,8 @@ var single_feature_trial = {
     label: ['Feature 1'],
     anchors: [['low', '', 'high']],
     force_listen: false,
-    loop: true
+    loop: true,
+		prompt: '<p>Please rate these files</p>'
 }
 
 var jsPsych = initJsPsych({

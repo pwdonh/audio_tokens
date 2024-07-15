@@ -1,0 +1,77 @@
+#consent {
+    width: 50em;
+    margin: auto;
+    margin-top: 10px;
+}
+
+#demographics {
+    width: 40em;
+    margin: auto;
+    margin-top: 10px;
+}
+
+#matrixdropdown {
+    width: 100%;
+    margin-top: 10px;
+}
+
+#rating {
+    width: 30em;
+    margin: auto;
+    margin-top: 10px;
+}
+
+#feedback {
+    width: 70em;
+    margin: auto;
+    margin-top: 10px;
+}
+
+.btn-green {
+    background-color: #1ab394;
+    color: #fff;
+    border-radius: 3px;
+}
+
+.btn-green:hover,
+.btn-green:focus {
+    background-color: #18a689;
+    color: #fff;
+}
+
+.panel-footer {
+    text-align: right;
+    background-color: #fff;
+}
+
+#plot-speakers-div {
+    display: flex;
+    flex-direction: row;
+}
+#plot-speakers-div textarea {
+    height: 400px;
+    width: 16vw;
+}
+#user-labels {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+#user-labels * {
+    animation: fadeIn 1s;
+}
+#user-labels > div {
+    display: flex;
+    flex-direction: row;
+}
+#user-labels > div > label {
+    text-align: left;
+    width: 30px;
+}
+#user-labels > div > input {
+    flex-grow: 1;
+}

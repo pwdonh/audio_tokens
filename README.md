@@ -159,3 +159,24 @@ jsPsych has the option to save the experiment results in json (as shown above) o
 | 3  | data/speaker4.wav    | 0.6071428571428571  | Feature 1 | 0           | features   |
 
 More information in [`analysis/`](./analysis/)
+
+---
+
+## Allowing the participant to specify cluster labels
+
+For `ratingtype: 'cluster'` trials, you can allow the participant to specify labels (or
+any other text information) by way of a text box that appears to the right of the screen.
+
+In order to enable this, you must provide a `user_labels` value in the trial parameters,
+which specifies a prompt that the participant sees to encourage them to add labels - e.g.
+
+```
+var cluster_trial = {
+    type: jsPsychAudioTokens,
+    ratingtype: 'cluster',
+    stimuli: stimuli,
+    force_listen: false,
+    loop: true,
+    user_labels: "How would you label the clusters you've made?\n(Add one label per line)"
+}
+```

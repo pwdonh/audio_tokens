@@ -13,6 +13,7 @@ class AudioGraph {
     this.opacity = params.opacity
     this.nextURL = params.nextURL
     this.loop = params.loop
+    this.preload_audio = params.preload_audio
     this.user_labels = params.user_labels
     this.mute_key = params.mute_key
     if (isJsPsych) {
@@ -115,9 +116,13 @@ class AudioGraph {
       this.startFcn()
     } else {   
       this.start_btn = document.createElement("BUTTON");
-      this.start_btn.innerHTML = 'Please wait...'
+      if (this.preload_audio) {
+        this.start_btn.innerHTML = 'Please wait...'
+        this.start_btn.disabled = true // enabled once audio is available
+      } else {
+        this.start_btn.innerHTML = 'Start'
+      }
       this.start_btn.className += this.buttonClass
-      this.start_btn.disabled = true // enabled once audio is available
       this.start_btn.addEventListener("click", this.startFcn.bind(this))
       
       this.submit_btn = document.createElement("BUTTON");
@@ -179,10 +184,12 @@ class AudioGraph {
         this.audios.push({duration: 0., elapsed: 0., started: 0.})
         document.getElementById(this.audioContainerId).innerHTML += '<audio id="'+player_id+'"></audio>'
         if (this.nodes[i].audiofile.length>0) {
-          // showPlaybackTools(this.nodes[i].audiofile, this.nodes[i].id, this.loop)
-          audioPromises.push(
-            preloadAudio(this.nodes[i].id, this.nodes[i].audiofile))
-
+          if (this.preload_audio) {
+            audioPromises.push(
+              preloadAudio(this.nodes[i].id, this.nodes[i].audiofile))
+          } else {
+            showPlaybackTools(this.nodes[i].audiofile, this.nodes[i].id, this.loop)
+          }
         } else {
           audioPromises.push(
             requestAudio(this.nodes[i].id))
@@ -195,12 +202,14 @@ class AudioGraph {
         this.nodes[i].audioindex = i
       }
     }
-    console.log(`waiting for ${audioPromises.length} audio files...`);
-    Promise.all(audioPromises).then(()=>{
-      console.log("got all audio")
-      this.start_btn.innerHTML = 'Start'
-      this.start_btn.disabled = false
-    });
+    if (this.preload_audio) {
+      console.log(`waiting for ${audioPromises.length} audio files...`);
+      Promise.all(audioPromises).then(()=>{
+        console.log("got all audio")
+        this.start_btn.innerHTML = 'Start'
+        this.start_btn.disabled = false
+      });
+    }
   }
 
   layout() {

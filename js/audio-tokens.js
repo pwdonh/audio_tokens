@@ -13,6 +13,8 @@ class AudioGraph {
     this.opacity = params.opacity
     this.nextURL = params.nextURL
     this.loop = params.loop
+    this.preload_audio = params.preload_audio
+    this.user_labels = params.user_labels
     this.mute_key = params.mute_key
     if (isJsPsych) {
         this.buttonClass = "jspsych-btn"
@@ -114,7 +116,12 @@ class AudioGraph {
       this.startFcn()
     } else {   
       this.start_btn = document.createElement("BUTTON");
-      this.start_btn.innerHTML = 'Start'
+      if (this.preload_audio) {
+        this.start_btn.innerHTML = 'Please wait...'
+        this.start_btn.disabled = true // enabled once audio is available
+      } else {
+        this.start_btn.innerHTML = 'Start'
+      }
       this.start_btn.className += this.buttonClass
       this.start_btn.addEventListener("click", this.startFcn.bind(this))
       
@@ -147,12 +154,28 @@ class AudioGraph {
       document.getElementById(this.buttonContainerId).appendChild(this.start_btn)
       document.getElementById(this.buttonContainerId).appendChild(this.submit_btn)
       document.getElementById(this.buttonContainerId).appendChild(this.mute_icon)
+
+      if (this.user_labels) {
+        this.user_labels_div = document.createElement("div")
+        this.user_labels_div.id = "user-labels"
+        this.user_labels_div.title = this.user_labels
+        this.user_labels_div.style.display = "none" // shown in draw()
+        document.getElementById(this.parentId).parentElement.appendChild(this.user_labels_div)
+
+        const label = document.createElement("label")
+        label.id = "user-labels-prompt"
+        label.appendChild(document.createTextNode(this.user_labels))
+        label.style.display = "none" // shown when first group added
+        this.user_labels_div.appendChild(label)
+      }
+      
     }
   }
 
   setupAudio() {
     const tracks = []
     var player_id, player, i
+    var audioPromises = []
     for (i=0; i<this.num_items; i++) {
       player_id = 'page-audio-'+this.nodes[i].id
       if (!!document.getElementById(player_id)) {
@@ -161,9 +184,15 @@ class AudioGraph {
         this.audios.push({duration: 0., elapsed: 0., started: 0.})
         document.getElementById(this.audioContainerId).innerHTML += '<audio id="'+player_id+'"></audio>'
         if (this.nodes[i].audiofile.length>0) {
-          showPlaybackTools(this.nodes[i].audiofile, this.nodes[i].id, this.loop)
+          if (this.preload_audio) {
+            audioPromises.push(
+              preloadAudio(this.nodes[i].id, this.nodes[i].audiofile))
+          } else {
+            showPlaybackTools(this.nodes[i].audiofile, this.nodes[i].id, this.loop)
+          }
         } else {
-          requestAudio(this.nodes[i].id)
+          audioPromises.push(
+            requestAudio(this.nodes[i].id))
         }
       }
       this.nodes[i].duration = 0.
@@ -172,6 +201,14 @@ class AudioGraph {
       if (!('audioindex' in this.nodes[i])) {
         this.nodes[i].audioindex = i
       }
+    }
+    if (this.preload_audio) {
+      console.log(`waiting for ${audioPromises.length} audio files...`);
+      Promise.all(audioPromises).then(()=>{
+        console.log("got all audio")
+        this.start_btn.innerHTML = 'Start'
+        this.start_btn.disabled = false
+      });
     }
   }
 
@@ -231,6 +268,8 @@ class AudioGraph {
     this.svg = svg
     // this.edges = edges
 
+    // show labels input, if any
+    if (this.user_labels_div) this.user_labels_div.style.display = null;
   }
 
   get_colorpalette(self) {
@@ -379,7 +418,7 @@ class AudioGraph {
         .style("opacity", opacity)
     }
     self.hovered = -1
-    if (self.all_in(self)) {
+    if (self.all_in(self, true)) {
       self.readyFcn()
     }    
   }
@@ -406,7 +445,7 @@ class AudioGraph {
     return Math.floor(ro)<=self.r
   }
 
-  all_in(self) {
+  all_in(self, suppressLabelValidityMessage) {
      var is_done = true
      var i = 0
      var audio
@@ -425,6 +464,21 @@ class AudioGraph {
        }
        i++
      }
+     if (is_done && self.user_labels) { // have all clusters been named?
+       var firstEmptyLabel = null;
+       for (let c = 1; c <= this.last_cluster; c++) { // for each cluster
+         if (this.countClusterMembers(c) > 0) {
+           var label = document.getElementById(`label-${c}`);
+           if (!label.value) { // label not specified
+             if (!suppressLabelValidityMessage) {
+               label.reportValidity();
+             }
+             is_done = false;
+             break;
+           } // label not specified
+         } // custer has members
+       } // next cluster
+     } // need user labels
      return is_done
   }
 
@@ -561,11 +615,90 @@ class CircleSortGraph extends AudioGraph {
     if (self.clusterIndex[nn]) {
       self.clusterIndex[i] = self.clusterIndex[nn]
     } else { // if not, create new cluster
-      self.clusterIndex[i] = self.last_cluster+1
-      self.last_cluster += 1
-    }
+      // (but if they're the lone member of a cluster already, there's no need to create a new one)
+      if (!self.clusterIndex[i] // they weren't already in a cluster
+          || this.countClusterMembers(self.clusterIndex[i]) > 1) { // the cluster they were in has other members
+        self.clusterIndex[i] = self.last_cluster+1
+        self.last_cluster += 1
+        if (this.user_labels) {
+
+          // ensure prompt is visible
+          document.getElementById("user-labels-prompt").style.display = null;
+          
+          // add a label in the SVG
+          d3.select("#plot-speakers-svg").insert("foreignObject",":first-child")
+            .attr("id", `cluster-${self.last_cluster}`)
+            .attr("width", "50")
+            .attr("height", "30")
+          let label = document.createElement("label")
+          label.setAttribute("xmlns", "http://www.w3.org/1999/xhtml")
+          label.setAttribute("style", "white-space: nowrap;")
+          label.setAttribute("for", `label-${self.last_cluster}`)
+          label.setAttribute("title", `Group ${self.last_cluster}`)
+          label.appendChild(document.createTextNode(`←${self.last_cluster}`))
+          document.getElementById("cluster-"+self.last_cluster).appendChild(label)
+
+          // the label is for an input in user_labels_div on the right,
+          // which is also prefixed by a label
+          const labelRow = document.createElement("div")
+          labelRow.setAttribute("id", `label-row-${self.last_cluster}`)
+          
+          label = document.createElement("label")
+          label.setAttribute("style", "white-space: nowrap;")
+          label.setAttribute("for", `label-${self.last_cluster}`)
+          label.setAttribute("title", `Group ${self.last_cluster}`)
+          label.appendChild(document.createTextNode(`${self.last_cluster}:`))
+          labelRow.appendChild(label)
+          
+          const input = document.createElement("input")
+          input.setAttribute("id", `label-${self.last_cluster}`)
+          input.setAttribute("placeholder", `Group ${self.last_cluster}`)
+          input.setAttribute("title", `Group ${self.last_cluster}`)
+          input.required = true
+          input.addEventListener("keyup", function() {
+            if (self.all_in(self, true)) {
+              self.readyFcn()
+            }
+          });
+          input.addEventListener("change", function() {
+            if (self.all_in(self)) {
+              self.readyFcn()
+            }
+          });
+          labelRow.appendChild(input)
+          self.user_labels_div.appendChild(labelRow)
+        }
+      } // they're not a lone member of their own cluster
+    } // no nearest neighbor
+    
+    if (this.user_labels) { // position labels of all clusters and check for clusters that have no members
+      for (let c = 1; c <= self.last_cluster; c++) {
+        const countMembers = this.countClusterMembers(c)
+        if (countMembers == 0) { // no members
+          // remove the label
+          d3.select(`#cluster-${c}`).remove()
+          // and the input
+          try { document.getElementById(`label-row-${c}`).remove() } catch (x) {} // (it might have already been removed)
+        } else { // position the label
+          const nodesInThisCluster = this.nodes.filter((element, index) => self.clusterIndex[index] == c)
+          const maxY = Math.max(...nodesInThisCluster.map(node => node.y))
+          const minY = Math.min(...nodesInThisCluster.map(node => node.y))
+          const maxX = Math.max(...nodesInThisCluster.map(node => node.x))
+          d3.select(`#cluster-${c}`)
+            .attr("x", maxX + 15)
+            .attr("y", minY + (maxY-minY)/2 - 15)
+        }
+      } // next cluster
+    } // there are user labels
+    
     // update number of clusters
     self.num_clusters = self.clusterIndex.filter(onlyUnique).length
+  }
+
+  countClusterMembers(c) {
+    return this.clusterIndex
+      .filter(cNode => cNode == c)
+      .length
   }
 
   dragged(self, circle, d, i) {
@@ -632,16 +765,48 @@ class CircleSortGraph extends AudioGraph {
   }
 
   submitFcn() {
+
+    // 'clusterIndex' is an array of cluster numbers, but the numbers can be 'sparse' in the
+    // sense that numbers can be missing - e.g. [5,3,1,1]
+    // when we pass the cluster 'labels', though, it's a dense array of label - e.g. ["one","three","five"]
+    // we want the 'values' passed to index the 'labels' array
+    // e.g. if the clusterIndex is 5 and thr corresponding label "five" is the third
+    // element in 'labels' then we want to pass 3 as the 'values' element.
+    
+    // to achieve this we add the unique 'clusterIndex' values to an array...
+    var clusterNumbers = []
+    for (var i=0; i<this.nodes.length; i++) {
+      if (!clusterNumbers.includes(this.clusterIndex[i])) { // the cluster isn't already there 
+        clusterNumbers.push(this.clusterIndex[i])
+      }
+    } // next node
+    // ... then sort the array so that the index of the cluster number will match the label index
+    clusterNumbers.sort();
+    
     var results = []
     for (var i=0; i<this.nodes.length; i++) {
       results.push({'id': this.nodes[i].id, 'audiofile': this.nodes[i].audiofile,
-                    'values': [this.clusterIndex[i]], 
+                    // the value is the index in 'clusterNumbers' of the 'clusterIndex' for this node
+                    // (add 1 so the indices are 1-based, because most likely analysis will be done in R)
+                    'values': [clusterNumbers.indexOf(this.clusterIndex[i]) + 1], 
                     'elapsed': this.audios[i].elapsed/this.audios[i].duration})
     }
-    this.submitResults({'type': 'circlesort', 'trial_id': this.trial_id,
-                        'ratingtype': 'cluster', 'labels': [''],
-                        'results': results, 'time': Date.now()-this.time_0},
-                        this.nextURL)
+    var labels = []
+    if (this.user_labels) {
+      for (let c = 1; c <= this.last_cluster; c++) { // for each cluster
+        if (this.countClusterMembers(c) > 0) {
+          labels.push(document.getElementById(`label-${c}`).value)
+        }
+      }
+    } else {
+      labels.push("")
+    }
+    this.submitResults(
+      {'type': 'circlesort', 'trial_id': this.trial_id,
+       'ratingtype': 'cluster',
+       'labels': labels,
+       'results': results, 'time': Date.now()-this.time_0},
+      this.nextURL)
   }
 
 }
@@ -870,10 +1035,12 @@ class TripletAudioGraph extends SquareAudioGraph {
                     'values': [nodes[i].completed], 
                     'elapsed': this.audios[i].elapsed/this.audios[i].duration})
     }
-    this.submitResults({'type': 'triplet', 'trial_id': this.trial_id,
-                        'ratingtype': 'triplet', 'labels': [''],
-                        'results': results, 'time': Date.now()-this.time_0},
-                        this.nextURL)
+    this.submitResults(
+      {'type': 'triplet', 'trial_id': this.trial_id,
+       'ratingtype': 'triplet',
+       'labels': [''],
+       'results': results, 'time': Date.now()-this.time_0},
+      this.nextURL)
   }
 
 }
@@ -1621,13 +1788,37 @@ function showPlaybackTools(data, audiofile_id, loop) {
     player.loop = loop; // True or False
 }
 
+function preloadAudio(audiofile_id, audio_url) {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: audio_url,
+      cache:false,
+      xhr:function(){// Seems like the only way to get access to the xhr object
+        var xhr = new XMLHttpRequest();
+        xhr.responseType= 'blob'
+        return xhr;
+      },
+      success: function( data, textStatus, jQxhr ){
+        var url = window.URL || window.webkitURL;
+        showPlaybackTools(url.createObjectURL(data), audiofile_id, true)
+        resolve()
+      },
+      error: function( jqXhr, textStatus, errorThrown ){
+        console.log( errorThrown );
+        reject(errorThrown)
+      }
+    }); // ajax
+  }); // Promise
+}
+
 function requestAudio(audiofile_id, url="") {
-  if (url.length==0) {
-    var audio_url = window.location.origin+'/get_audio'
-  } else {
-    var audio_url = url+'/get_audio'
-  }
-  $.ajax({
+  return new Promise((resolve, reject) => {
+    if (url.length==0) {
+      var audio_url = window.location.origin+'/get_audio'
+    } else {
+      var audio_url = url+'/get_audio'
+    }
+    $.ajax({
       url: audio_url,
       dataType: 'json',
       type: 'post',
@@ -1637,12 +1828,15 @@ function requestAudio(audiofile_id, url="") {
       ),
       processData: false,
       success: function( data, textStatus, jQxhr ){
-          showPlaybackTools(data.audio.type+';'+data.audio.data, audiofile_id, true)
+        showPlaybackTools(data.audio.type+';'+data.audio.data, audiofile_id, true)
+        resolve()
       },
       error: function( jqXhr, textStatus, errorThrown ){
-          console.log( errorThrown );
+        console.log( errorThrown );
+        reject(errorThrown)
       }
-  });
+    }); // ajax
+  }); // Promise
 }
 
 function makeArray(startValue, stopValue, cardinality) {

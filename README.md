@@ -159,3 +159,60 @@ jsPsych has the option to save the experiment results in json (as shown above) o
 | 3  | data/speaker4.wav    | 0.6071428571428571  | Feature 1 | 0           | features   |
 
 More information in [`analysis/`](./analysis/)
+
+---
+
+## Preloading Audio
+
+You may wish to ensure that slow or intermittent internet doesn't interrupt media playback.
+
+In this case, set the `preload_audio` parameter to `true`, and all audio data for all stimuli
+will be loaded before the experiment can begin. This incurs a possible delay at the start, but
+ensures that playback proceeds without interruption.
+
+```
+var cluster_trial = {
+    type: jsPsychAudioTokens,
+    ratingtype: 'cluster',
+    stimuli: stimuli,
+    force_listen: false,
+    loop: true,
+    preload_audio: true
+}
+```
+
+## Allowing the participant to specify cluster labels
+
+For `ratingtype: 'cluster'` trials, you can allow the participant to specify labels (or
+any other text information) by way of a text box that appears to the right of the screen
+for each cluster.
+
+<img src="./imgs/figure_cluster_labels.png"
+     alt="Clustered stimuli on the left, and a label for each cluster on the right" width="600"/>
+
+In order to enable this, you must provide a `user_labels` value in the trial parameters,
+which specifies a prompt that the participant sees to encourage them to add labels - e.g.
+
+```
+var cluster_trial = {
+    type: jsPsychAudioTokens,
+    ratingtype: 'cluster',
+    stimuli: stimuli,
+    force_listen: false,
+    loop: true,
+    user_labels: "How would you label the clusters you've made?\n(Add one label per line)"
+}
+```
+
+If enabled, the results include the rating labels in an array, the indices of which correspond
+to clusters (where *rating* = *label index* + 1), e.g.
+
+```
+[
+  {
+    "ratings": [2, 3, 3, 2, 2, 2, 1, 1, 1],
+    "labels": ["label for rating 1", "label for rating 2", "label for rating 3"],
+    ...
+  }
+]
+```

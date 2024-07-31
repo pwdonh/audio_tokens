@@ -187,6 +187,9 @@ For `ratingtype: 'cluster'` trials, you can allow the participant to specify lab
 any other text information) by way of a text box that appears to the right of the screen
 for each cluster.
 
+<img src="./imgs/figure_cluster_labels.png"
+     alt="Clustered stimuli on the left, and a label for each cluster on the right" width="600"/>
+
 In order to enable this, you must provide a `user_labels` value in the trial parameters,
 which specifies a prompt that the participant sees to encourage them to add labels - e.g.
 

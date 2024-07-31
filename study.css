@@ -52,6 +52,9 @@
     height: 400px;
     width: 16vw;
 }
+#user-labels-prompt {
+    white-space: preserve;
+}
 #user-labels {
     width: 300px;
     display: flex;

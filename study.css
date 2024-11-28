@@ -1,0 +1,26 @@
+#user-labels-prompt {
+    white-space: preserve;
+}
+#user-labels {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+#user-labels * {
+    animation: fadeIn 1s;
+}
+#user-labels > div {
+    display: flex;
+    flex-direction: row;
+}
+#user-labels > div > label {
+    text-align: left;
+    width: 30px;
+}
+#user-labels > div > input {
+    flex-grow: 1;
+}

@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html>
-    <head>
+  <head>
+        <meta charset="UTF-8"> 
         <title>My experiment</title>
         <script src="https://unpkg.com/jspsych@7.0.0"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="js/jspsych-audio-tokens-v7.js"></script>
         <script src="js/audio-tokens.js"></script>
         <script src="//d3js.org/d3.v4.min.js"></script>
         <link href="https://unpkg.com/jspsych@7.0.0/css/jspsych.css" rel="stylesheet" type="text/css" />
+        <link href="study.css" rel="stylesheet" type="text/css" />
     </head>
     <body>
     </body>
@@ -75,7 +78,13 @@
             ratingtype: 'cluster',
             stimuli: stimuli,
             force_listen: false,
-            loop: true
+            loop: true,
+            
+            // uncomment to pre-load audio stimuli:
+            // preload_audio: true,
+            
+            // uncomment to require participants to label each cluster:
+            // user_labels: "How would you label the clusters you've made?\n(Add one label per line)"
         }
 
         var similarity_trial = {
